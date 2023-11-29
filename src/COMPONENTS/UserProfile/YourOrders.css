@@ -261,7 +261,7 @@
     }
 
     .yourorders table tr td button {
-        padding: 2px 5px;
+        /* padding: 2px 5px; */
         margin: 0px;
         font-size: 12px;
     }

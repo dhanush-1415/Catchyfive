@@ -276,7 +276,7 @@ const ProductCard = ({ data, wishlist }) => {
           if (data.Code === 200) {
             setisinwhishlist(true);
             getwhishlist();
-            toast.success('Product added to wishlist', {
+            toast.success('Product added to favourites', {
               position: "bottom-right",
               autoClose: 1000,
             });

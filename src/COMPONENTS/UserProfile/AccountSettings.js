@@ -89,7 +89,7 @@ const AccountSettings = ({user}) => {
       
         <div className='form-group'>
           <label htmlFor='email'>Email <span>*</span></label>
-          <input type='email' name='email' id='email' 
+          <input type='email' name='email' id='email' readOnly
             value={userdata?.EmailId}
             onChange={(e) => setuserdata({...userdata, EmailId: e.target.value})}
           />

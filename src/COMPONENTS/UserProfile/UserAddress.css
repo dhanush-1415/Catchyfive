@@ -47,7 +47,7 @@
 
     .addressin .addresscontainer {
         width: 100%;
-        min-height: 50px;
+        min-height: 30px;
         height: min-content;
         font-size: 12px;
     }

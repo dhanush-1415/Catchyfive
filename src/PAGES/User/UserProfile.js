@@ -14,8 +14,9 @@ import './UserProfile.css'
 import { useRecoilState } from 'recoil'
 import { orderSuccessfulProvider } from '../../Providers/OrderSuccessfulProvider'
 import { toast } from 'react-toastify'
-import { authPopupState } from '../../Providers/AuthPopupProvider'
-import LoyaltyPoints from '../../COMPONENTS/UserProfile/LoyaltyPoints'
+import { authPopupState } from '../../Providers/AuthPopupProvider';
+import LoyaltyPoints from '../../COMPONENTS/UserProfile/LoyaltyPoints';  
+
 const UserProfile = () => {
   const { activepage } = useParams()
   // alert(activepage)
@@ -72,20 +73,12 @@ const UserProfile = () => {
           <UserSidebar activepage={activepage} />
         </div>
         <div className='right'>
-          {activepage === 'accountsettings' && <AccountSettings user={user} />}
-          {activepage === 'yourorders' && <YourOrders userid={user[0]?.B2CCustomerId} EmailId={
-            user[0]?.EmailId
-          } />}
-          {
-            activepage === 'loyalty' && <LoyaltyPoints user={user}/>
-          }
-          {activepage === 'address' && <UserAddress />}
-          {/* {activepage === 'legalnotice' && <LegalNotice/>} */}
-          {activepage === 'changepassword' && <ChangePassword userid={user[0]?.B2CCustomerId}
-            oldpass={user[0]?.Password}
-            emailid={user[0]?.EmailId}
-          />}
-        </div>
+        {activepage === 'accountsettings' && <AccountSettings user={user} />}
+        {activepage === 'yourorders' && <YourOrders userid={user[0]?.B2CCustomerId} EmailId={user[0]?.EmailId} />}
+        {activepage === 'loyalty' && <LoyaltyPoints />}
+        {activepage === 'address' && <UserAddress />}
+        {activepage === 'changepassword' && <ChangePassword userid={user[0]?.B2CCustomerId} oldpass={user[0]?.Password} emailid={user[0]?.EmailId} />}
+      </div>
       </div>
       <Footer1 />
     </div>

@@ -33,6 +33,8 @@ const AuthPopup = () => {
     const [userData , setUserdata] = useState([]);
     const [date , setDate] = useState("");
     const [createDisable , setCreateDisable] = useState(true);
+    const [ buttonName , setButtonName ] = useState("Verify");
+    const [sendbtnName , setSendBtnName ] = useState("Send Otp");
 
     const handleChange = (nextChecked) => {
         setChecked(nextChecked);
@@ -61,14 +63,34 @@ const AuthPopup = () => {
     };
     
 
-    const setTimeDisable = () => {
-      setSendDisabled(true);
+ 
   
-      setTimeout(() => {
-        setSendDisabled(false);
-      }, 30000); 
-    };
+
+      const [count, setCount] = useState(30);
+
+      const setTimeDisable = () => {
+        setSendDisabled(true);
+    
+        setTimeout(() => {
+          setSendDisabled(false);
+        }, count * 1000); 
+      };
+    
+      const decrementCount = () => {
+        if (count > 0) {
+          setCount(count - 1);
+        }
+      };
+
+
+    useEffect(() => {
+      const intervalId = setInterval(decrementCount, 1000);
   
+      return () => clearInterval(intervalId);
+    }, [count]); 
+
+
+
     const handleLogin = async () => {
 
         let emailError = '';
@@ -185,7 +207,7 @@ const AuthPopup = () => {
         AddressLine1: "",
         AddressLine2: "",
         AddressLine3: "",
-        MobileNo: "",
+        MobileNo: "+65",
         CountryId: "IND",
         PostalCode: "",
         IsActive: true,
@@ -238,12 +260,16 @@ const AuthPopup = () => {
           nameError = 'Please enter your name';
         } else if (/^\s*$/.test(signupdata.B2CCustomerName)) {
           nameError = 'Name cannot be just spaces';
+        }else if(signupdata.B2CCustomerName.length < 5 || signupdata.B2CCustomerName.length > 30){
+          nameError = 'Name must be between 5 and 30 characters';
         }
         
         if (!signupdata.MobileNo) {
           phoneError = 'Please enter your phone number';
         } else if (/^\s*$/.test(signupdata.MobileNo)) {
           phoneError = 'Phone number cannot be just spaces';
+        }else if (!signupdata.MobileNo.startsWith('+65')) {
+          phoneError = 'Please enter a Singapore phone number (starting with +65)';
         }
         
         if (!signupdata.EmailId) {
@@ -256,6 +282,8 @@ const AuthPopup = () => {
           passwordError = 'Please enter your password';
         } else if (/^\s*$/.test(signupdata.Password)) {
           passwordError = 'Password cannot be just spaces';
+        }else if (!/(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&*()_+]).{8,16}/.test(signupdata.Password)) {
+          passwordError = 'Password must be 8-16 characters and contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character';
         }
         
         if (!signupdata.PostalCode) {
@@ -380,7 +408,7 @@ const AuthPopup = () => {
   
         const data = await response.json();
         console.log('OTP sent successfully:');
-  
+        setButtonName("Verifying...");
         setverify(data.Data);
         setIsOtpSent(true);
         setShowVerifySection(true);
@@ -388,6 +416,8 @@ const AuthPopup = () => {
         setTimeDisable()
         setTimeout(() => {
           setOtpSentMessage(false);
+          setButtonName("Resend");
+          decrementCount();
         }, 1000);
     
   
@@ -454,11 +484,13 @@ const AuthPopup = () => {
         const data = await response.json();
   
         console.log('OTP sent successfully:', data);
-  
+        setSendBtnName("Resend");
         setverify(data.Data);
         setForgotOtpVerify(true);
+        setTimeDisable()
         setTimeout(() => {
           setOtpSentMessage(false);
+          decrementCount();
         }, 1000);
     
   
@@ -476,6 +508,8 @@ const AuthPopup = () => {
     e.preventDefault();
     if (otp === verify) {
       console.log('OTP verified successfully.');
+      setButtonName("Verified");
+      setSendDisabled(true);
       setIsVerified(true);
       setOtpError(false); // Reset OTP error flag if OTP is verified successfully
       setCreateDisable(false);
@@ -548,15 +582,37 @@ const AuthPopup = () => {
 
 
     const [moveChange, setMoveChange] = useState(true);
+    const [charErr, setCharErr ] = useState(true);
+
 
     useEffect(() => {
-      if (createPassword === confirmPassword) {
+      // Define regular expressions for each password criteria
+      const minLength = 8;
+      const maxLength = 16;
+      const hasUppercase = /[A-Z]/.test(createPassword);
+      const hasLowercase = /[a-z]/.test(createPassword);
+      const hasNumeric = /\d/.test(createPassword);
+      const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(createPassword);
+    
+      // Check if all criteria are met
+      const isValidPassword =
+        createPassword.length >= minLength &&
+        createPassword.length <= maxLength &&
+        hasUppercase &&
+        hasLowercase &&
+        hasNumeric &&
+        hasSpecialChar;
+    
+      // Update the state based on password validity
+      if (createPassword === confirmPassword && isValidPassword) {
         setMoveChange(false);
+        setCharErr(false); // Reset charerr to false when the password is valid
       } else {
         setMoveChange(true);
+        setCharErr(true); // Set charerr to true when the password is not valid
       }
     }, [createPassword, confirmPassword]);
-
+    
 
     const handlePasswordchange =async () => {
 
@@ -749,13 +805,13 @@ const AuthPopup = () => {
                     }}
                   />
                   <button className='btn send-otp-button' disabled={sendDisable} onClick={handleForgotSendOTP}>
-                    Verify
+                    {sendbtnName}
                   </button>
            </div>
            <div style={{color:'red' , display: emailErr ? 'flex' : 'none'}}><span>please enter email to send otp</span></div>
            {forgotVerify &&  (
            <div className='formcont'>
-            <label htmlFor='VerifyOtp'>Otp <span className="mandatory">*</span></label>
+            <label htmlFor='VerifyOtp'>Otp <span className="mandatory">*</span><span style={{color:'red'}}>Resend in {count} seconds</span></label>
             <input type='text' name='verifyOtp' id='verifyOtp'
               value={forgotData.OTP}
               onChange={(e) => {
@@ -834,6 +890,8 @@ const AuthPopup = () => {
                   </div>
                 </div>
                 <div style={{color:'red' , display:moveChange ? "flex" : "none" }}><span>Password is not matching</span></div>
+                <div style={{color:'red' , display:charErr ? "flex" : "none" }}><span>Password must be 8-16 characters and contain at least one uppercase letter, one lowercase letter, one numeric digit, and one special character</span></div>
+
           </>
            )}
            
@@ -896,26 +954,7 @@ const AuthPopup = () => {
            
            
           </div>
-          <div className='formcont'>
-            {/* <label htmlFor='phone'>
-              Phone <span className='mandatory'>*</span>
-            </label> */}
-             <label htmlFor='phone'>Phone{signupErrors.phone && <span className='error-msg'> - {signupErrors.phone}</span>} <span className='mandatory'>*</span></label>
-            <div className="email-input-container">
-            <input
-              type='text'
-              className='email-input'
-              name='phone'
-              id='phone'
-              placeholder='Enter the Phone no'
-              onChange={(e) => {
-                setsignupdata({ ...signupdata, MobileNo: e.target.value });
-              }}
-            />
-           
-            {/* {signupErrors.phone && <div className='error-msg'>{signupErrors.phone}</div>} */}
-            </div>
-          </div>
+
           <div className='formcont'>
       {/* <label htmlFor='email' >
         Email Address <span className='mandatory'>*</span>
@@ -934,7 +973,7 @@ const AuthPopup = () => {
       />
       {/* {signupErrors.email && <div className='error-msg'>{signupErrors.email}</div>} */}
       <button className='btn send-otp-button' disabled={sendDisable} onClick={handleSendOTP}>
-        Send OTP
+        {buttonName}
       </button>
      
       </div>
@@ -944,7 +983,7 @@ const AuthPopup = () => {
       {isOtpSent && !isVerified && showVerifySection &&  (
         <div className='formcont'>
           <label>
-            OTP </label>
+            OTP  <span style={{color:'red'}}>Resend in {count} seconds</span></label>
           <div className="email-input-container">
            <input 
             className='email-input'
@@ -966,6 +1005,27 @@ const AuthPopup = () => {
             <p style={{ color: 'red' }}>Invalid OTP. Please try again.</p>
           )}
 </div>
+<div className='formcont'>
+            {/* <label htmlFor='phone'>
+              Phone <span className='mandatory'>*</span>
+            </label> */}
+             <label htmlFor='phone'>Phone{signupErrors.phone && <span className='error-msg'> - {signupErrors.phone}</span>} <span className='mandatory'>*</span></label>
+            <div className="email-input-container">
+            <input
+              type='text'
+              className='email-input'
+              name='phone'
+              id='phone'
+              placeholder='Enter the Phone no'
+              value={signupdata.MobileNo}
+              onChange={(e) => {
+                setsignupdata({ ...signupdata, MobileNo: e.target.value });
+              }}
+            />
+           
+            {/* {signupErrors.phone && <div className='error-msg'>{signupErrors.phone}</div>} */}
+            </div>
+          </div>
     <div className='formcont'>
                   {/* <label htmlFor='password'>Password</label> */}
                   <label htmlFor='password'>Password{signupErrors.password && <span className='error-msg'> - {signupErrors.password}</span>} <span className='mandatory'>*</span></label>
@@ -1067,7 +1127,7 @@ const AuthPopup = () => {
           </div>
 
           <div className='formcont'>
-            <label htmlFor='addressline3'>Address Line 3 <span className="mandatory">*</span></label>
+            <label htmlFor='addressline3'>Address Line 2 <span className="mandatory">*</span></label>
             <input type='text' name='addressline3' id='addressline3'
               value={signupdata.AddressLine3}
               onChange={(e) => {

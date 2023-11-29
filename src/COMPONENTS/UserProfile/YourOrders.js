@@ -180,6 +180,7 @@ const YourOrders = ({ userid, EmailId }) => {
                                 }</td>
                                 <td><button
                                     className='mainbutton1'
+                                    style={{padding:'3px 13px'}}
                                 // onClick={() => getsuccessfulorder(item.OrderNo)}
                                 onClick={() => {
                                     getsuccessfulorder(item.OrderNo)
@@ -188,6 +189,12 @@ const YourOrders = ({ userid, EmailId }) => {
                                     setordersuccessmessage(item.OrderNo)
                                 }}
                                 >View</button></td>
+                                <td><button
+                                    className='mainbutton1'
+                                    style={{padding:'3px 13px'}}
+                                // onClick={() => getsuccessfulorder(item.OrderNo)}
+                                
+                                >ReOrder</button></td>
                             </tr>
                         )
                     })}
