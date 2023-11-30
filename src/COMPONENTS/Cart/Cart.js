@@ -79,7 +79,7 @@ const Cart = () => {
                 <div className='c3'>
                     <span>Get free delivery for orders above S${freeDelivery}</span>
                     <div className='c31'>
-                        <h1>Subtotal:</h1>
+                        <h1>Qty total:</h1>
                         <h1>S$ {subtotal.toFixed(2)}</h1>
                     </div>
                     <p>Final price and discounts will be determined at the time of payment processing.</p>

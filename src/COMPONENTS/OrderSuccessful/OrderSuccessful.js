@@ -137,7 +137,7 @@ const OrderSuccessful = ({ orderid, message, redirectto , orderdata , orderitems
           </div>
 
           <div>
-            <p>Sub Total</p>
+            <p>Qty Total</p>
             <p>$ {orderdata.Total}</p>
           </div>
 
@@ -200,12 +200,12 @@ const OrderSuccessful = ({ orderid, message, redirectto , orderdata , orderitems
 
           <div className='right'>
             <div>
-              <p>Subtotal</p>
+              <p>Qty total</p>
               <p>S$ {converttofloat(subtotal).toFixed(2)}</p>
             </div>
 
             <div>
-              <p>Shipping</p>
+              <p>Shipping charges</p>
               <p>S$ {converttofloat(shipping).toFixed(2)}</p>
             </div>
 
@@ -215,7 +215,7 @@ const OrderSuccessful = ({ orderid, message, redirectto , orderdata , orderitems
             </div>
 
             <div>
-              <p>Total</p>
+              <p>Pay amount</p>
               <p>S$ {converttofloat(subtotal + shipping + tax).toFixed(2)}</p>
             </div>
           </div>

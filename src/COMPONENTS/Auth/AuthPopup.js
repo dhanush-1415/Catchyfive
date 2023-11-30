@@ -9,6 +9,8 @@ import { authPopupState } from '../../Providers/AuthPopupProvider';
 import { loginState } from '../../Providers/LoginProvider';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
 import { Grid, Paper, Typography, Button } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 const AuthPopup = () => {
     const [authPopupShow, setAuthPopupShow] = useRecoilState(authPopupState);
@@ -35,6 +37,7 @@ const AuthPopup = () => {
     const [createDisable , setCreateDisable] = useState(true);
     const [ buttonName , setButtonName ] = useState("Verify");
     const [sendbtnName , setSendBtnName ] = useState("Send Otp");
+    const [boxLoad , setboxload ] = React.useState(false);
 
     const handleChange = (nextChecked) => {
         setChecked(nextChecked);
@@ -89,6 +92,11 @@ const AuthPopup = () => {
       return () => clearInterval(intervalId);
     }, [count]); 
 
+    useEffect(()=> {
+      if(showVerifySection === true){
+        decrementCount();
+       }
+    } , [showVerifySection])
 
 
     const handleLogin = async () => {
@@ -118,7 +126,7 @@ const AuthPopup = () => {
         if (emailError || passwordError) {
           return;
         }
-        // Proceed with the API call
+        setboxload(true);
         fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerRegister/CustomerLogin', {
           method: 'POST',
           headers: {
@@ -152,7 +160,8 @@ const AuthPopup = () => {
                                       //color
                                   }
                               )
-          
+                              setboxload(false)
+
                               setTimeout(() => {
                                   setAuthPopupShow(false)
                                   // window.location.reload()
@@ -313,6 +322,8 @@ const AuthPopup = () => {
         return;
       }
         // console.log(tempdata)
+        setboxload(true);
+
         fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerRegister/GetbyEmail?OrganizationId=3&EmailId=' + signupdata.EmailId)
             .then((response) => response.json())
             .then((data) => {
@@ -333,6 +344,7 @@ const AuthPopup = () => {
                         .then((response) => response.json())
                         .then((data) => {
                             if (data.Code == 200) {
+                              setboxload(false);
                                 toast.success('Signup Successfull',
                                     {
                                         position: "top-center",
@@ -417,7 +429,6 @@ const AuthPopup = () => {
         setTimeout(() => {
           setOtpSentMessage(false);
           setButtonName("Resend");
-          decrementCount();
         }, 1000);
     
   
@@ -768,7 +779,7 @@ const AuthPopup = () => {
                                     e.preventDefault()
                                     handleLogin()
                                 }}
-                            >Sign In</button>
+                            >{boxLoad ? <CircularProgress sx={{color:'white'}} /> : "Sign In"}</button>
                         </form> 
                     </div>
                 }
@@ -941,7 +952,7 @@ const AuthPopup = () => {
             {/* <label htmlFor='name'>
               Name <span className='mandatory'>*</span>
             </label> */}
-              <label htmlFor='name'>Name{signupErrors.name && <span className='error-msg'> - {signupErrors.name}</span>} <span className='mandatory'>*</span></label>
+              <label htmlFor='name'>Name <span className='mandatory'>*</span></label>
         <input
               type='text'
               name='name'
@@ -951,15 +962,14 @@ const AuthPopup = () => {
                 setsignupdata({ ...signupdata, B2CCustomerName: e.target.value });
               }}
             />
-           
-           
+           {signupErrors.name && <span className='error-msg'> - {signupErrors.name}</span>}
           </div>
 
           <div className='formcont'>
       {/* <label htmlFor='email' >
         Email Address <span className='mandatory'>*</span>
     </label> */}
-     <label htmlFor='email'>Email Address{signupErrors.email && <span className='error-msg'> - {signupErrors.email}</span>} <span className='mandatory'>*</span></label>
+     <label htmlFor='email'>Email Address <span className='mandatory'>*</span></label>
       <div className="email-input-container">
       <input
         type='email'
@@ -975,7 +985,7 @@ const AuthPopup = () => {
       <button className='btn send-otp-button' disabled={sendDisable} onClick={handleSendOTP}>
         {buttonName}
       </button>
-     
+      {signupErrors.email && <span className='error-msg'> - {signupErrors.email}</span>}
       </div>
       {otpSentMessage && (
         <p style={{ color: 'green' }}>OTP has been sent to your email</p>
@@ -1009,7 +1019,7 @@ const AuthPopup = () => {
             {/* <label htmlFor='phone'>
               Phone <span className='mandatory'>*</span>
             </label> */}
-             <label htmlFor='phone'>Phone{signupErrors.phone && <span className='error-msg'> - {signupErrors.phone}</span>} <span className='mandatory'>*</span></label>
+             <label htmlFor='phone'>Phone<span className='mandatory'>*</span></label>
             <div className="email-input-container">
             <input
               type='text'
@@ -1022,13 +1032,13 @@ const AuthPopup = () => {
                 setsignupdata({ ...signupdata, MobileNo: e.target.value });
               }}
             />
-           
+           {signupErrors.phone && <span className='error-msg'> - {signupErrors.phone}</span>} 
             {/* {signupErrors.phone && <div className='error-msg'>{signupErrors.phone}</div>} */}
             </div>
           </div>
     <div className='formcont'>
                   {/* <label htmlFor='password'>Password</label> */}
-                  <label htmlFor='password'>Password{signupErrors.password && <span className='error-msg'> - {signupErrors.password}</span>} <span className='mandatory'>*</span></label>
+                  <label htmlFor='password'>Password <span className='mandatory'>*</span></label>
                   <div style={{ position: 'relative' }}>
                     <input
                       type={showPassword ? 'text' : 'password'}
@@ -1058,12 +1068,13 @@ const AuthPopup = () => {
                         <EyeSlash />
                       )}
                     </span>
+                    {signupErrors.password && <span className='error-msg'> - {signupErrors.password}</span>}
                   </div>
                   {/* {signupErrors.password && <div className='error-msg'>{signupErrors.password}</div>} */}
                 </div>
                             <div className='formcont'>
   {/* <label htmlFor='postalcode'>Postal Code <span className="mandatory">*</span></label> */}
-  <label htmlFor='postalcode'>Postal Code{signupErrors.postalCode&& <span className='error-msg'> - {signupErrors.postalCode}</span>} <span className='mandatory'>*</span></label>
+  <label htmlFor='postalcode'>Postal Code<span className='mandatory'>*</span></label>
   <div className="email-input-container">
     <input
     className='email-input'
@@ -1101,6 +1112,7 @@ const AuthPopup = () => {
     >
       Fetch
     </button>
+    {signupErrors.postalCode&& <span className='error-msg'> - {signupErrors.postalCode}</span>} 
   </div>
 </div>
 
@@ -1115,7 +1127,7 @@ const AuthPopup = () => {
             />
           </div>
           <div className='formcont'>
-          <label htmlFor='addressline2'>Floor and Unit no{signupErrors.floor && <span className='error-msg'> - {signupErrors.floor}</span>} <span className='mandatory'>*</span></label>
+          <label htmlFor='addressline2'>Floor and Unit no <span className='mandatory'>*</span></label>
             {/* <label htmlFor='addressline2'>Floor and Unit no <span className="mandatory">*</span></label> */}
             <input type='text' name='addressline2' id='addressline2' placeholder='Enter your Floor no or unit no'
               value={signupdata.AddressLine2}
@@ -1124,11 +1136,12 @@ const AuthPopup = () => {
                 setsignupdata({ ...signupdata, AddressLine2: e.target.value })
               }}
             />
+            {signupErrors.floor && <span className='error-msg'> - {signupErrors.floor}</span>}
           </div>
 
           <div className='formcont'>
             <label htmlFor='addressline3'>Address Line 2 <span className="mandatory">*</span></label>
-            <input type='text' name='addressline3' id='addressline3'
+            <input type='text' name='addressline3' id='addressline3' placeholder='Enter your Address Line 2'
               value={signupdata.AddressLine3}
               onChange={(e) => {
                 e.preventDefault()
@@ -1143,7 +1156,7 @@ const AuthPopup = () => {
                                     handleSignup()
                                 }}
                                 disabled={createDisable}
-                            >Sign Up</button>
+                            >{boxLoad ? <CircularProgress sx={{color:'white'}} /> : "Sign Up"}</button>
                         </form>
                     </div>
                 }

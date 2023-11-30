@@ -202,23 +202,23 @@ preorderarray.OrderDetail && preorderarray.OrderDetail.map((item, index) => {
 
           <div className='right'>
             <div>
-              <p>Subtotal</p>
-              <p>S$ {converttofloat(23).toFixed(2)}</p>
+              <p>Qty total</p>
+              <p>S$ {converttofloat(preorderarray.SubTotal).toFixed(2)}</p>
             </div>
 
             <div>
-              <p>Shipping</p>
-              <p>S$ {converttofloat(2).toFixed(2)}</p>
+              <p>Shipping charge</p>
+              <p>S$ {converttofloat(preorderarray.ShippingCost).toFixed(2)}</p>
             </div>
 
             <div>
               <p>Tax</p>
-              <p>S$ f3</p>
+              <p>S$ {converttofloat(preorderarray.Tax).toFixed(2)}</p>
             </div>
 
             <div>
-              <p>Total</p>
-              <p>S$ {converttofloat(333).toFixed(2)}</p>
+              <p>Pay amount</p>
+              <p>S$ {converttofloat(preorderarray.SubTotal + preorderarray.ShippingCost + preorderarray.Tax ).toFixed(2)}</p>
             </div>
           </div>
         </div>

@@ -178,7 +178,7 @@ const YourOrders = ({ userid, EmailId }) => {
                                     {item.status}</td>
                                 <td>S${item.NetTotal
                                 }</td>
-                                <td><button
+                                <td style={{maxWidth:'15px'}}><button
                                     className='mainbutton1'
                                     style={{padding:'3px 13px'}}
                                 // onClick={() => getsuccessfulorder(item.OrderNo)}

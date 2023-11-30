@@ -767,15 +767,15 @@ const Checkout = () => {
           </table>
 
           <div className='subtotal'>
-            <h1>Sub Total</h1>
+            <h1>Qty Total</h1>
             <h2>S${subtotal.toFixed(2)}</h2>
           </div>
           <div className='subtotal'>
-            <h1>Shipping</h1>
+            <h1>Shipping charges</h1>
             <h2>S${shippingcost.toFixed(2)}</h2>
           </div>
           <div className='subtotal'>
-            <h1>Net Total</h1>
+            <h1>Pay Total</h1>
             <h2>S${(subtotal + shippingcost).toFixed(2)}</h2>
           </div>
           {

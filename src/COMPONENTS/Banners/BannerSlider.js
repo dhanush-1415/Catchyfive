@@ -34,7 +34,7 @@ const BannerSlider = () => {
 
 
     const getbannerdata = () => {
-        fetch(process.env.REACT_APP_BACKEND_URL + '/B2CBannerImage/GetAll?OrganizationId='+process.env.REACT_APP_BACKEND_ORGANIZATION, {
+        fetch(process.env.REACT_APP_BACKEND_URL + '/B2CBannerImage/GetAllActive?OrganizationId='+process.env.REACT_APP_BACKEND_ORGANIZATION, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
