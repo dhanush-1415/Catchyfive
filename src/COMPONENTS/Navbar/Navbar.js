@@ -896,15 +896,7 @@ const Navbar = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
                             </svg>
                            <h3>Delivery:</h3>
-
-                            {
-                                !defaultaddress ?
-                                    <p>Address</p>
-                                    :
-                                    <p>{defaultaddress?.AddressLine1 && (defaultaddress.AddressLine1)} {defaultaddress?.AddressLine2.length > 0 && (', ' + defaultaddress.AddressLine2)} {defaultaddress?.AddressLine3.length > 0 && (', ' + defaultaddress.AddressLine3)}</p>
-
-                            }
-
+                           <p>Address</p>
                         </div>
                     </Link>
                     }

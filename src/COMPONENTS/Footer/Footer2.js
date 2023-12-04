@@ -13,10 +13,10 @@ const Footer2 = () => {
           <img src={logo} alt='logo' className='logo' />
           <p>We offer high-quality foods and the best delivery service, and the food market you can blindly trust.</p>
           <div className='social'>
-            <SocialIcon url="https://twitter.com/jaketrent" />
-            <SocialIcon url="https://facebook.com/jaketrent" />
+            {/* <SocialIcon url="https://twitter.com/jaketrent" /> */}
+            <SocialIcon url="https://www.facebook.com/catchyfive.pte.ltd/" />
             <SocialIcon url="https://instagram.com/jaketrent" />
-            <SocialIcon url="https://youtube.com/jaketrent" />
+            {/* <SocialIcon url="https://youtube.com/jaketrent" /> */}
           </div>
 
         </div>
@@ -33,7 +33,6 @@ const Footer2 = () => {
             window.location.href="/contact"
            }}
           >Contact us</p>
-          <p>About team</p>
           <p>Customer Support</p>
         </div>
         <div className='f2'>

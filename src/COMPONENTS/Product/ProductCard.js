@@ -54,6 +54,20 @@ const style = {
   minHeight: '85vh !important',
 };
 
+const style2 = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  borderRadius:'8px',
+  p: 4,
+  zIndex:9999,
+  minHeight: '85vh !important',
+  display:'flex',
+  justifyContent:'center',
+};
 
 const CustomPrevArrow = (props) => (
   <div className="custom-arrow custom-prev" onClick={props.onClick}>
@@ -164,6 +178,10 @@ const ProductCard = ({ data, wishlist }) => {
           flag = 1
           item.quantity = item.quantity + count
           setshow(true);
+          toast.success('Product added to cart', {
+            position: "bottom-right",
+            autoClose: 1000,
+          })
         }
       })
       if (flag === 0) {
@@ -458,10 +476,9 @@ const ProductCard = ({ data, wishlist }) => {
             aria-describedby="modal-modal-description"
             sx={{zIndex:'9999'}}
         >
-            <Box sx={style} className='pop-responsive'>
-                <CloseIcon sx={{ position:'relative' , float:'right' , cursor:'pointer'}} onClick={handleClose} />
                 {productData ? (
                 <>
+              <Box sx={style} className='pop-responsive'>
                              {productData && (
                 <Grid container width='98%' >
                     <Grid item sm={12} md={8} >
@@ -650,16 +667,18 @@ const ProductCard = ({ data, wishlist }) => {
                       <></>
                     )}
                 </Grid> 
+                </Box>
                 </>
                 ):(
                   <>
+                <Box sx={style2} className='pop-responsive'>
                   <div style={{display:'flex' , justifyContent:'center'}}>
                     <img src={logo} alt="Loading..." />
                   </div>
+                </Box>
                   </>
                 )}
-
-            </Box>
+                <CloseIcon sx={{ position:'relative' , float:'right' , cursor:'pointer'}} onClick={handleClose} />
         </Modal>
 
 

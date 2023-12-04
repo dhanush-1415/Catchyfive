@@ -169,11 +169,13 @@ const AuthPopup = () => {
                           
             } else {
               toast.error('Login Failed');
+              setboxload(false);
             }
           })
           .catch((error) => {
             console.error('Error during login:', error);
             toast.error('An error occurred during login.');
+            setboxload(false);
           });
         
       };

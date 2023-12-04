@@ -25,6 +25,7 @@ const AddNewAddress = ({ user, getaddress }) => {
   const [errorPostalCode, setErrorPostalCode] = useState('');
   const [errorFloorNumber, setErrorFloorNumber] = useState('');
   const [boxLoad , setboxload ] = React.useState(false);
+  const [boxLoad2 , setboxload2 ] = React.useState(false);
 
   const addnewaddress = () => {
     setboxload(true);
@@ -204,6 +205,7 @@ const AddNewAddress = ({ user, getaddress }) => {
                 <Grid item md={6}>
                 <button 
   onClick={async (e) => {
+    setboxload2(true);
     e.preventDefault();
     if (!postalcode) {
       setErrorPostalCode('Postal Code is required.');
@@ -225,13 +227,14 @@ console.log('API response:', data);
         AddressLine1: `${data.results[0].BLK_NO} ${data.results[0].ROAD_NAME}`,
         AddressLine3: addressLine3
       }));
+      setboxload2(false);
     } 
     else {
       console.log('No results found.');
       // Handle when no results are found
     }
   }}
->Fetch</button>
+> {boxLoad2 ? <CircularProgress sx={{color:'white'}} /> : "Fetch"}</button>
                 </Grid>
             </Grid>
           </div>

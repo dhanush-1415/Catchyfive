@@ -1,4 +1,4 @@
-import React from 'react'
+import React , {useState , useEffect} from 'react'
 import { toast } from 'react-toastify'
 import './ChangePassword.css'
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
@@ -17,8 +17,15 @@ const ChangePassword = ({ userid, oldpass, emailid }) => {
     const [showNewPassword, setShowNewPassword] = React.useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
     const [authPopupShow, setAuthPopupShow] = useRecoilState(authPopupState);
+    const [passwordsMatch, setPasswordsMatch] = useState(false);
 
-    
+    useEffect(() => {
+      if (newpassword === confirmpassword) {
+        setPasswordsMatch(false);
+      } else {
+        setPasswordsMatch(true);
+      }
+    }, [newpassword, confirmpassword]);
 
   const handleChange = (e) => {
     e.preventDefault()
@@ -115,7 +122,7 @@ const ChangePassword = ({ userid, oldpass, emailid }) => {
       </div>
 
       <div className='form-group' style={{ position: 'relative' }}>
-        <label htmlFor='confirmPassword'>Confirm New Password <span>*</span></label>
+        <label htmlFor='confirmPassword'>Confirm New Password <span>*</span>{passwordsMatch && <span style={{color:'red'}}>Password dosen't match</span>} </label>
         <input
           type={showConfirmPassword ? 'text' : 'password'} // Toggle input type based on showConfirmPassword
           value={confirmpassword}

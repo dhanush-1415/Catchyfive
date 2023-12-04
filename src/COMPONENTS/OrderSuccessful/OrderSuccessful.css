@@ -148,7 +148,7 @@
 .confirmationcont .c3 .right div {
     display: flex;
     gap: 20px;
-    min-width: 27%;
+    min-width: 37%;
     justify-content: space-between;
 }
 
