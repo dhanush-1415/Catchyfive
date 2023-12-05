@@ -35,8 +35,9 @@ const OrderSuccessful = ({ orderid, message, redirectto , orderdata , orderitems
   }, [orderid])
 
   const clearcart = () => {
-    localStorage.removeItem('cart')
-  }
+    localStorage.removeItem('cartArray');
+};
+
 
   const converttofloat = (value) => {
     // console.log(parseFloat(value) + 0.001)

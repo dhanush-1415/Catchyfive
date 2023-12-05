@@ -15,6 +15,28 @@ const Failed = () => {
 
   console.log(preorderarray);
 
+
+  const emptyCart = () => {
+    const userData = JSON.parse(localStorage.getItem('token'));
+    const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+
+    let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+    if (userId) {
+        const userCartIndex = cartArray.findIndex((userCart) => userCart.UserId === userId);
+
+        if (userCartIndex !== -1) {
+            // If the user has a cart, remove the entire cart entry
+            cartArray.splice(userCartIndex, 1);
+            localStorage.setItem('cartArray', JSON.stringify(cartArray));
+        }
+    } else {
+        // Handle the case where the user is not logged in
+        console.log('User not logged in');
+    }
+};
+
+
   const placesuccessorder = () => {
     fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerOrder/Create', {
       method: 'POST',
@@ -28,8 +50,7 @@ const Failed = () => {
       console.log('Order Code ', data.Data);
       if (data.Message === 'Sucess' && data.Code === 200) {
         setordersuccessorderid(data.Data);
-        const emptyCart = [];
-        localStorage.setItem('cart', JSON.stringify(emptyCart));
+        emptyCart();
         //setreloadnavbar(!reloadnavbar);
        // setReloadKey(prevKey => prevKey + 1); // Increment the reload key
       }

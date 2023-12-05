@@ -102,19 +102,46 @@ const WishListItem = ({ item, getwishlist }) => {
 
 
 
+  // const getcartitems = () => {
+  //   let cart = JSON.parse(localStorage.getItem('cart'))
+  //   if (cart !== null) {
+  //     let qty = 0;
+  //     cart.forEach((item) => {
+  //       qty += item.quantity
+  //     })
+  //     setcartdataquantity(qty)
+  //   }
+  //   else {
+  //     setcartdataquantity(0)
+  //   }
+  // }
+
+
   const getcartitems = () => {
-    let cart = JSON.parse(localStorage.getItem('cart'))
-    if (cart !== null) {
-      let qty = 0;
-      cart.forEach((item) => {
-        qty += item.quantity
-      })
-      setcartdataquantity(qty)
+    const userData = JSON.parse(localStorage.getItem('token'));
+    const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+
+    const cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+    if (userId) {
+        const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+
+        if (userCart) {
+            let qty = 0;
+            userCart.CartItems.forEach((item) => {
+                qty += item.quantity;
+            });
+            setcartdataquantity(qty);
+        } else {
+            // User has no items in the cart
+            setcartdataquantity(0);
+        }
+    } else {
+        // User is not logged in or has invalid data
+        setcartdataquantity(0);
     }
-    else {
-      setcartdataquantity(0)
-    }
-  }
+};
+
 
   const getProductById = async (code) => {
 
@@ -163,26 +190,64 @@ const WishListItem = ({ item, getwishlist }) => {
   }
 
 
-  const addtocartPop = () => {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+//   const addtocartPop = () => {
+//     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    const itemInCart = cart.find(item => item.data.ProductCode === productData.ProductCode);
+//     const itemInCart = cart.find(item => item.data.ProductCode === productData.ProductCode);
 
-    if (itemInCart) {
-        itemInCart.quantity += count;
-    } else {
-        cart.push({ data: productData, quantity: count });
-    }
+//     if (itemInCart) {
+//         itemInCart.quantity += count;
+//     } else {
+//         cart.push({ data: productData, quantity: count });
+//     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+//     localStorage.setItem('cart', JSON.stringify(cart));
 
-    toast.success('Product added to cart', {
-        position: "bottom-right",
-        autoClose: 1000,
-    });
+//     toast.success('Product added to cart', {
+//         position: "bottom-right",
+//         autoClose: 1000,
+//     });
 
-    getcartitems();
-}
+//     getcartitems();
+// }
+
+const addtocartPop = () => {
+  const userData = JSON.parse(localStorage.getItem('token'));
+  const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+
+  let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+  if (userId) {
+      const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+
+      if (userCart) {
+          const itemInCart = userCart.CartItems.find(item => item.data.ProductCode === productData.ProductCode);
+
+          if (itemInCart) {
+              itemInCart.quantity += count;
+          } else {
+              userCart.CartItems.push({ data: productData, quantity: count });
+          }
+      } else {
+          // User has no cart, create a new entry for the user
+          cartArray.push({ UserId: userId, CartItems: [{ data: productData, quantity: count }] });
+      }
+
+      localStorage.setItem('cartArray', JSON.stringify(cartArray));
+
+      toast.success('Product added to cart', {
+          position: "bottom-right",
+          autoClose: 1000,
+      });
+
+      getcartitems(); // Assuming you have a function to update cart quantity in UI
+  } else {
+      // Handle the case where the user is not logged in
+      // You may want to show a message or redirect the user to the login page
+      console.log('User not logged in');
+  }
+};
+
 
   const handleOpen = (code) => {
     getProductById(code);
@@ -214,61 +279,84 @@ const WishListItem = ({ item, getwishlist }) => {
             });
     };
 
+    // const addtocart = () => {
+    //     let cart = JSON.parse(localStorage.getItem('cart'))
+    //     if (cart === null) {
+    //         cart = []
+
+    //         cart.push({ data: item[0], quantity: 1 })
+    //         localStorage.setItem('cart', JSON.stringify(cart))
+    //         toast.success('Product added to cart', {
+    //             position: "bottom-right",
+    //             autoClose: 1000,
+    //         })
+    //         removewishlist()
+
+    //     }
+    //     else{
+    //         let flag = 0
+    //         cart.forEach((item1) => {
+    //             if (item1.data.ProductCode === item[0].ProductCode) {
+    //                 flag = 1
+    //                 item1.quantity = item1.quantity + 1
+    //             }
+    //         })
+    //         if (flag === 0) {
+    //             cart.push({ data: item[0], quantity: 1 })
+    //         }
+    //         localStorage.setItem('cart', JSON.stringify(cart))
+    //         toast.success('Product added to cart', {
+    //             position: "bottom-right",
+    //             autoClose: 1000,
+    //         })
+    //         removewishlist()
+    //     }
+
+    //     let user = JSON.parse(localStorage.getItem('token'));
+
+    // }
+
+
     const addtocart = () => {
-        let cart = JSON.parse(localStorage.getItem('cart'))
-        if (cart === null) {
-            cart = []
-
-            cart.push({ data: item[0], quantity: 1 })
-            localStorage.setItem('cart', JSON.stringify(cart))
-            toast.success('Product added to cart', {
-                position: "bottom-right",
-                autoClose: 1000,
-            })
-            removewishlist()
-
-        }
-        else{
-            let flag = 0
-            cart.forEach((item1) => {
-                if (item1.data.ProductCode === item[0].ProductCode) {
-                    flag = 1
-                    item1.quantity = item1.quantity + 1
-                }
-            })
-            if (flag === 0) {
-                cart.push({ data: item[0], quantity: 1 })
-            }
-            localStorage.setItem('cart', JSON.stringify(cart))
-            toast.success('Product added to cart', {
-                position: "bottom-right",
-                autoClose: 1000,
-            })
-            removewishlist()
-        }
-        // else {
-        //     let flag = 0
-        //     cart.forEach((item1) => {
-        //         if (item1.data.ProductCode === item.ProductCode) {
-        //             flag = 1
-        //             item1.quantity = item1.quantity + 1
-        //         }
-        //     })
-        //     if (flag === 0) {
-        //         cart.push({ data: item, quantity: 1 })
-        //     }
-        //     localStorage.setItem('cart', JSON.stringify(cart))
-        //     toast.success('Product added to cart', {
-        //         position: "bottom-right",
-        //         autoClose: 1000,
-        //     })
-        //     removewishlist()
-        // }
-
-
-        let user = JSON.parse(localStorage.getItem('token'));
-
-    }
+      const userData = JSON.parse(localStorage.getItem('token'));
+      const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+  
+      let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+  
+      if (userId) {
+          const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+  
+          if (userCart) {
+              let flag = false;
+  
+              userCart.CartItems.forEach((item1) => {
+                  if (item1.data.ProductCode === item[0].ProductCode) {
+                      flag = true;
+                      item1.quantity = item1.quantity + 1;
+                  }
+              });
+  
+              if (!flag) {
+                  userCart.CartItems.push({ data: item[0], quantity: 1 });
+              }
+          } else {
+              // User has no cart, create a new entry for the user
+              cartArray.push({ UserId: userId, CartItems: [{ data: item[0], quantity: 1 }] });
+          }
+  
+          localStorage.setItem('cartArray', JSON.stringify(cartArray));
+          toast.success('Product added to cart', {
+              position: "bottom-right",
+              autoClose: 1000,
+          });
+          removewishlist();
+      } else {
+          // Handle the case where the user is not logged in
+          // You may want to show a message or redirect the user to the login page
+          console.log('User not logged in');
+      }
+  };
+  
 
     const [wishlistpopupshow, setwishlistpopupshow] = useRecoilState(wishPopupState);
     return (

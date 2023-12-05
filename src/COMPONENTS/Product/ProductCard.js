@@ -66,7 +66,7 @@ const style2 = {
   zIndex:9999,
   minHeight: '85vh !important',
   display:'flex',
-  justifyContent:'center',
+  justifyContent:'center'
 };
 
 const CustomPrevArrow = (props) => (
@@ -126,95 +126,299 @@ const ProductCard = ({ data, wishlist }) => {
   };
 
 
+  // useEffect(() => {
+  //   // Code to run when the component mounts
+  //   let cart = JSON.parse(localStorage.getItem('cart'));
+  //   //console.log(cart,data.ProductCode);
+  //   if (cart) {
+  //     cart.forEach((item) => {
+  //       if (item.data.ProductCode === data.ProductCode) {
+  //         setshow(true);
+  //         console.log(item.quantity);
+  //         setCount(item.quantity);
+  //         getwhishlist();
+  //       }
+  //     });
+  //   }
+  // }, []);
+
+
   useEffect(() => {
     // Code to run when the component mounts
-    let cart = JSON.parse(localStorage.getItem('cart'));
-    //console.log(cart,data.ProductCode);
-    if (cart) {
-      cart.forEach((item) => {
-        if (item.data.ProductCode === data.ProductCode) {
-          setshow(true);
-          console.log(item.quantity);
-          setCount(item.quantity);
-          getwhishlist();
+    const userData = JSON.parse(localStorage.getItem('token'));
+    const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+
+    let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+    if (userId) {
+        const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+
+        if (userCart) {
+            userCart.CartItems.forEach((item) => {
+                if (item.data.ProductCode === data.ProductCode) {
+                    setshow(true);
+                    console.log(item.quantity);
+                    setCount(item.quantity);
+                    getwhishlist(); // Assuming you have a function to get wishlist data
+                }
+            });
         }
-      });
     }
-  }, []);
+}, []);
+
+
+  // const getcartitems = () => {
+  //   let cart = JSON.parse(localStorage.getItem('cart'))
+  //   if (cart !== null) {
+  //     let qty = 0;
+  //     cart.forEach((item) => {
+  //       qty += item.quantity
+  //     })
+  //     setcartdataquantity(qty)
+  //   }
+  //   else {
+  //     setcartdataquantity(0)
+  //   }
+  // }
+
+  // const getcartitems = () => {
+  //   const cartArray = JSON.parse(localStorage.getItem('cartArray'));
+  //   if (cartArray !== null && cartArray.length > 0) {
+  //     let qty = 0;
+  //     cartArray.forEach((userCart) => {
+  //       userCart.CartItems.forEach((item) => {
+  //         qty += item.quantity;
+  //       });
+  //     });
+  //     setcartdataquantity(qty);
+  //   } else {
+  //     setcartdataquantity(0);
+  //   }
+  // };
+
 
   const getcartitems = () => {
-    let cart = JSON.parse(localStorage.getItem('cart'))
-    if (cart !== null) {
-      let qty = 0;
-      cart.forEach((item) => {
-        qty += item.quantity
-      })
-      setcartdataquantity(qty)
-    }
-    else {
-      setcartdataquantity(0)
-    }
-  }
+    const userData = JSON.parse(localStorage.getItem('token'));
+    const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
 
+    const cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+    if (userId) {
+        const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+
+        if (userCart) {
+            let qty = 0;
+            userCart.CartItems.forEach((item) => {
+                qty += item.quantity;
+            });
+            setcartdataquantity(qty);
+        } else {
+            // User has no items in the cart
+            setcartdataquantity(0);
+        }
+    } else {
+        // User is not logged in or has invalid data
+        setcartdataquantity(0);
+    }
+};
+
+
+
+const deleteitem = () => {
+  const userData = JSON.parse(localStorage.getItem('token'));
+  const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+
+  let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+  if (userId) {
+      const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+
+      if (userCart) {
+          userCart.CartItems = userCart.CartItems.filter((item) => item.data.ProductCode !== data.ProductCode);
+      }
+
+      localStorage.setItem('cartArray', JSON.stringify(cartArray));
+      getcartitems()
+    }
+};
+
+
+  // const addtocart = () => {
+  //   let user = localStorage.getItem('token')
+  //   user = JSON.parse(user)
+  //   if(user && user.length && ((user[0].B2CCustomerId !== "") || (user[0].B2CCustomerId !== null)) ){
+  //   let cart = JSON.parse(localStorage.getItem('cart'))
+  //   if (cart === null) {
+  //     cart = []
+
+  //     cart.push({ data, quantity: count })
+  //     localStorage.setItem('cart', JSON.stringify(cart))
+  //     toast.success('Product added to cart', {
+  //       position: "bottom-right",
+  //       autoClose: 1000,
+  //     })
+  //     getcartitems()
+  //   }
+  //   else {
+  //     let flag = 0
+  //     cart.forEach((item) => {
+  //       if (item.data.ProductCode === data.ProductCode) {
+  //         flag = 1
+  //         item.quantity = item.quantity + count
+  //         setshow(true);
+  //       }
+  //     })
+  //     if (flag === 0) {
+  //       cart.push({ data, quantity: count })
+  //     }
+  //     localStorage.setItem('cart', JSON.stringify(cart))
+  //     getcartitems()
+  //   }
+  //   }
+  // }
+
+  const showToast = (message) => {
+    toast.success(message, {
+      position: "bottom-right",
+      autoClose: 1000,
+    });
+  };
 
 
   const addtocart = () => {
-    let cart = JSON.parse(localStorage.getItem('cart'))
-    if (cart === null) {
-      cart = []
-
-      cart.push({ data, quantity: count })
-      localStorage.setItem('cart', JSON.stringify(cart))
-      toast.success('Product added to cart', {
-        position: "bottom-right",
-        autoClose: 1000,
-      })
-      getcartitems()
-    }
-    else {
-      let flag = 0
-      cart.forEach((item) => {
-        if (item.data.ProductCode === data.ProductCode) {
-          flag = 1
-          item.quantity = item.quantity + count
-          setshow(true);
-          toast.success('Product added to cart', {
-            position: "bottom-right",
-            autoClose: 1000,
-          })
+    let userData = localStorage.getItem('token');
+    userData = JSON.parse(userData);
+  
+    if (
+      userData &&
+      userData.length &&
+      (userData[0].B2CCustomerId !== "" || userData[0].B2CCustomerId !== null)
+    ) {
+      let cartData = JSON.parse(localStorage.getItem('cartArray')) || [];
+  
+      if (!cartData.length) {
+        cartData.push({ UserId: userData[0].B2CCustomerId, CartItems: [{ data, quantity: count }] });
+        localStorage.setItem('cartArray', JSON.stringify(cartData));
+        showToast('Product added to cart');
+        getcartitems();
+      } else {
+        let flag = false;
+  
+        cartData.forEach((userCart) => {
+          if (userCart.UserId === userData[0].B2CCustomerId) {
+            userCart.CartItems.forEach((item) => {
+              if (item.data.ProductCode === data.ProductCode) {
+                flag = true;
+                item.quantity += count;
+                setshow(true);
+              }
+            });
+  
+            if (!flag) {
+              userCart.CartItems.push({ data, quantity: count });
+            }
+  
+            localStorage.setItem('cartArray', JSON.stringify(cartData));
+            getcartitems();
+          }
+        });
+  
+        if (!flag) {
+          cartData.push({ UserId: userData[0].B2CCustomerId, CartItems: [{ data, quantity: count }] });
+          localStorage.setItem('cartArray', JSON.stringify(cartData));
+          showToast('Product added to cart');
+          getcartitems();
         }
-      })
-      if (flag === 0) {
-        cart.push({ data, quantity: count })
       }
-      localStorage.setItem('cart', JSON.stringify(cart))
-      getcartitems()
     }
-  }
+  };
+  
+
+  
+
+  // const incrementcartqty = () => {
+  //   let cart = JSON.parse(localStorage.getItem('cart'))
+  //   cart.forEach((item) => {
+  //     if (item.data.ProductCode === data.ProductCode) {
+  //       item.quantity = item.quantity + 1
+  //     }
+  //   })
+  //   localStorage.setItem('cart', JSON.stringify(cart))
+  //   getcartitems()
+
+  // }
+
 
   const incrementcartqty = () => {
-    let cart = JSON.parse(localStorage.getItem('cart'))
-    cart.forEach((item) => {
-      if (item.data.ProductCode === data.ProductCode) {
-        item.quantity = item.quantity + 1
-      }
-    })
-    localStorage.setItem('cart', JSON.stringify(cart))
-    getcartitems()
+    const userData = JSON.parse(localStorage.getItem('token'));
+    const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
 
-  }
+    let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+    if (userId) {
+        const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+
+        if (userCart) {
+            userCart.CartItems.forEach((item) => {
+                if (item.data.ProductCode === data.ProductCode) {
+                    item.quantity = item.quantity + 1;
+                }
+            });
+        }
+
+        localStorage.setItem('cartArray', JSON.stringify(cartArray));
+        getcartitems()
+      }
+};
+
+
+  // const decrementcartqty = () => {
+  //   let cart = JSON.parse(localStorage.getItem('cart'))
+  //   cart.forEach((item) => {
+  //     if (item.data.ProductCode === data.ProductCode && item.quantity > 1) {
+  //         item.quantity = item.quantity - 1;
+  //     }
+  //   })
+  //   localStorage.setItem('cart', JSON.stringify(cart))
+  //   getcartitems()
+
+  // }
 
   const decrementcartqty = () => {
-    let cart = JSON.parse(localStorage.getItem('cart'))
-    cart.forEach((item) => {
-      if (item.data.ProductCode === data.ProductCode && item.quantity > 1) {
-          item.quantity = item.quantity - 1;
-      }
-    })
-    localStorage.setItem('cart', JSON.stringify(cart))
-    getcartitems()
+    const userData = JSON.parse(localStorage.getItem('token'));
+    const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
 
-  }
+    let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+    const updatedCart = [];
+
+    if (userId) {
+        const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+
+        if (userCart) {
+            userCart.CartItems.forEach((item) => {
+                if (item.data.ProductCode === data.ProductCode) {
+                    if (item.quantity > 1) {
+                        item.quantity = item.quantity - 1;
+                    } else {
+                        // If quantity is 1, remove the item from the cart
+                        deleteitem(); // Assuming you have a function to delete the item
+                        return; // Exit the loop early since the item is removed
+                    }
+                }
+
+                // Keep items that are not the one being decreased or have a quantity greater than 1
+                if (item.quantity > 0) {
+                    updatedCart.push(item);
+                }
+            });
+        }
+
+        // Update the cart in local storage
+        localStorage.setItem('cartArray', JSON.stringify(cartArray));
+        getcartitems()
+    }
+};
+
 
 
   const [prodid, setprodid] = useState(null)
@@ -442,26 +646,64 @@ const ProductCard = ({ data, wishlist }) => {
   const handleClose = () => setOpen(false);
 
 
-  const addtocartPop = () => {
-    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+//   const addtocartPop = () => {
+//     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    const itemInCart = cart.find(item => item.data.ProductCode === productData.ProductCode);
+//     const itemInCart = cart.find(item => item.data.ProductCode === productData.ProductCode);
 
-    if (itemInCart) {
-        itemInCart.quantity += count;
-    } else {
-        cart.push({ data: productData, quantity: count });
-    }
+//     if (itemInCart) {
+//         itemInCart.quantity += count;
+//     } else {
+//         cart.push({ data: productData, quantity: count });
+//     }
 
-    localStorage.setItem('cart', JSON.stringify(cart));
+//     localStorage.setItem('cart', JSON.stringify(cart));
 
-    toast.success('Product added to cart', {
-        position: "bottom-right",
-        autoClose: 1000,
-    });
+//     toast.success('Product added to cart', {
+//         position: "bottom-right",
+//         autoClose: 1000,
+//     });
 
-    getcartitems();
-}
+//     getcartitems();
+// }
+
+const addtocartPop = () => {
+  const userData = JSON.parse(localStorage.getItem('token'));
+  const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+
+  let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+  if (userId) {
+      const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+
+      if (userCart) {
+          const itemInCart = userCart.CartItems.find(item => item.data.ProductCode === productData.ProductCode);
+
+          if (itemInCart) {
+              itemInCart.quantity += count;
+          } else {
+              userCart.CartItems.push({ data: productData, quantity: popCount });
+          }
+      } else {
+          // User has no cart, create a new entry for the user
+          cartArray.push({ UserId: userId, CartItems: [{ data: productData, quantity: popCount }] });
+      }
+
+      localStorage.setItem('cartArray', JSON.stringify(cartArray));
+
+      toast.success('Product added to cart', {
+          position: "bottom-right",
+          autoClose: 1000,
+      });
+
+      getcartitems(); // Assuming you have a function to update cart quantity in UI
+  } else {
+      // Handle the case where the user is not logged in
+      // You may want to show a message or redirect the user to the login page
+      console.log('User not logged in');
+  }
+};
+
 
   return (
     <>
@@ -478,7 +720,8 @@ const ProductCard = ({ data, wishlist }) => {
         >
                 {productData ? (
                 <>
-              <Box sx={style} className='pop-responsive'>
+                <Box sx={style} className='pop-responsive'>
+                <CloseIcon sx={{ position:'relative' , float:'right' , cursor:'pointer'}} onClick={handleClose} />
                              {productData && (
                 <Grid container width='98%' >
                     <Grid item sm={12} md={8} >
@@ -675,10 +918,10 @@ const ProductCard = ({ data, wishlist }) => {
                   <div style={{display:'flex' , justifyContent:'center'}}>
                     <img src={logo} alt="Loading..." />
                   </div>
-                </Box>
+                  </Box>
+
                   </>
                 )}
-                <CloseIcon sx={{ position:'relative' , float:'right' , cursor:'pointer'}} onClick={handleClose} />
         </Modal>
 
 

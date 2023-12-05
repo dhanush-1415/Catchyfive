@@ -11,21 +11,58 @@ const Cart = () => {
     const [cartdata, setcartdata] = React.useState([])
     const [subtotal, setsubtotal] = React.useState(0)
     const [freeDelivery, setfreeDelivery] = useState(80)
-    const getcartdata = async () => {
-        let cart = JSON.parse(localStorage.getItem('cart'))
-        // console.log(cart)
-        if (cart !== null) {
-            setcartdata(cart)
-            let total = 0
-            cart.forEach(item => {
-                total += item.data.SellingCost * item.quantity
-            })
-            setsubtotal(total)
+
+
+
+    // const getcartdata = async () => {
+    //     let cart = JSON.parse(localStorage.getItem('cart'))
+    //     // console.log(cart)
+    //     if (cart !== null) {
+    //         setcartdata(cart)
+    //         let total = 0
+    //         cart.forEach(item => {
+    //             total += item.data.SellingCost * item.quantity
+    //         })
+    //         setsubtotal(total)
+    //     }
+    //     else {
+    //         setcartdata([])
+    //     }
+    // }
+
+
+
+    const getcartdata = () => {
+        const userData = JSON.parse(localStorage.getItem('token'));
+        const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+      
+        const cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+      
+        if (userId) {
+          const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+      
+          if (userCart) {
+            setcartdata(userCart.CartItems);
+            let total = 0;
+      
+            userCart.CartItems.forEach((item) => {
+              total += item.data.SellingCost * item.quantity;
+            });
+      
+            setsubtotal(total);
+          } else {
+            // User has no items in the cart
+            setcartdata([]);
+            setsubtotal(0);
+          }
+        } else {
+          // User is not logged in or has invalid data
+          setcartdata([]);
+          setsubtotal(0);
         }
-        else {
-            setcartdata([])
-        }
-    }
+      };
+
+      
 
     React.useEffect(() => {
         getcartdata()

@@ -149,20 +149,43 @@ const ProductPage = () => {
     }
 
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     // Code to run when the component mounts
+    //     let cart = JSON.parse(localStorage.getItem('cart'));
+    //     console.log(cart);
+    //     if (cart) {
+    //       cart.forEach((item) => {
+    //         if (item.data.ProductCode === prodid) {
+    //          // setshow(true);
+    //           console.log(item.quantity);
+    //           setcount(item.quantity);
+    //         }
+    //       });
+    //     }
+    //   }, []);
+
+
+      useEffect(() => {
         // Code to run when the component mounts
-        let cart = JSON.parse(localStorage.getItem('cart'));
-        console.log(cart);
-        if (cart) {
-          cart.forEach((item) => {
-            if (item.data.ProductCode === prodid) {
-             // setshow(true);
-              console.log(item.quantity);
-              setcount(item.quantity);
+        const userData = JSON.parse(localStorage.getItem('token'));
+        const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+    
+        let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+    
+        if (userId) {
+            const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+    
+            if (userCart) {
+                userCart.CartItems.forEach((item) => {
+                    if (item.data.ProductCode === prodid) {
+                        console.log(item.quantity);
+                        setcount(item.quantity);
+                    }
+                });
             }
-          });
         }
-      }, []);
+    }, [prodid]);
+    
 
     const [rating, setrating] = React.useState(0)
 
@@ -257,32 +280,79 @@ const ProductPage = () => {
     //     }
     //   }
       
+    // const addtocart = () => {
+    //     let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    
+    //     // Check if the product is already in the cart
+    //     const itemInCart = cart.find(item => item.data.ProductCode === productdata.ProductCode);
+    
+    //     if (itemInCart) {
+    //         // If the product is already in the cart, update its quantity
+    //         itemInCart.quantity += count;
+    //     } else {
+    //         // If the product is not in the cart, add it
+    //         cart.push({ data: productdata, quantity: count });
+    //     }
+    
+    //     // Update the cart in localStorage
+    //     localStorage.setItem('cart', JSON.stringify(cart));
+    
+    //     // Show a toast indicating the product was added to the cart
+    //     toast.success('Product added to cart', {
+    //         position: "bottom-right",
+    //         autoClose: 1000,
+    //     });
+    
+    //     // Update the cart items
+    //     getcartitems();
+    // }
+
+
+
     const addtocart = () => {
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const userData = JSON.parse(localStorage.getItem('token'));
+        const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
     
-        // Check if the product is already in the cart
-        const itemInCart = cart.find(item => item.data.ProductCode === productdata.ProductCode);
+        let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
     
-        if (itemInCart) {
-            // If the product is already in the cart, update its quantity
-            itemInCart.quantity += count;
+        if (userId) {
+            const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+    
+            if (userCart) {
+                // Check if the product is already in the user's cart
+                const itemInCart = userCart.CartItems.find(item => item.data.ProductCode === productdata.ProductCode);
+    
+                if (itemInCart) {
+                    // If the product is already in the cart, update its quantity
+                    itemInCart.quantity += count;
+                } else {
+                    // If the product is not in the cart, add it
+                    userCart.CartItems.push({ data: productdata, quantity: count });
+                }
+            } else {
+                // If the user has no cart, create a new entry for the user
+                cartArray.push({ UserId: userId, CartItems: [{ data: productdata, quantity: count }] });
+            }
+    
+            // Update the 'cartArray' in localStorage
+            localStorage.setItem('cartArray', JSON.stringify(cartArray));
+    
+            // Show a toast indicating the product was added to the cart
+            toast.success('Product added to cart', {
+                position: "bottom-right",
+                autoClose: 1000,
+            });
+    
+            // Update the cart items
+            getcartitems();
         } else {
-            // If the product is not in the cart, add it
-            cart.push({ data: productdata, quantity: count });
+            // Handle the case where the user is not logged in
+            // You may want to show a message or redirect the user to the login page
+            console.log('User not logged in');
         }
+    };
+
     
-        // Update the cart in localStorage
-        localStorage.setItem('cart', JSON.stringify(cart));
-    
-        // Show a toast indicating the product was added to the cart
-        toast.success('Product added to cart', {
-            position: "bottom-right",
-            autoClose: 1000,
-        });
-    
-        // Update the cart items
-        getcartitems();
-    }
     
 //     const addtocart = () => {
 //         let cart = JSON.parse(localStorage.getItem('cart'))
@@ -337,19 +407,45 @@ const ProductPage = () => {
 
     const [cartdataquantity, setcartdataquantity] = useRecoilState(cartQuantity)
 
+    // const getcartitems = () => {
+    //     let cart = JSON.parse(localStorage.getItem('cart'))
+    //     if (cart !== null) {
+    //         let qty = 0;
+    //         cart.forEach((item) => {
+    //             qty += item.quantity
+    //         })
+    //         setcartdataquantity(qty)
+    //     }
+    //     else {
+    //         setcartdataquantity(0)
+    //     }
+    // }
+
     const getcartitems = () => {
-        let cart = JSON.parse(localStorage.getItem('cart'))
-        if (cart !== null) {
-            let qty = 0;
-            cart.forEach((item) => {
-                qty += item.quantity
-            })
-            setcartdataquantity(qty)
+        const userData = JSON.parse(localStorage.getItem('token'));
+        const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+    
+        const cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+    
+        if (userId) {
+            const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+    
+            if (userCart) {
+                let qty = 0;
+                userCart.CartItems.forEach((item) => {
+                    qty += item.quantity;
+                });
+                setcartdataquantity(qty);
+            } else {
+                // User has no items in the cart
+                setcartdataquantity(0);
+            }
+        } else {
+            // User is not logged in or has invalid data
+            setcartdataquantity(0);
         }
-        else {
-            setcartdataquantity(0)
-        }
-    }
+    };
+    
 
 
     const [productpopup, setproductpopup] = useRecoilState(productPopupProvider)
