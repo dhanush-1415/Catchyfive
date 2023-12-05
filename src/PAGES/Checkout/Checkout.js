@@ -273,7 +273,7 @@ const Checkout = () => {
       "TaxCode": 1,
       "TaxType": "e",
       "TaxPerc": 0,
-      "CurrencyCode": "GD",
+      "CurrencyCode": "SGD",
       "CurrencyRate": 1,
       "Total": subtotal,
       "BillDiscount": 0,
@@ -386,7 +386,7 @@ const Checkout = () => {
         "TaxCode": 1,
         "TaxType": "e",
         "TaxPerc": 0,
-        "CurrencyCode": "GD",
+        "CurrencyCode": "SGD",
         "CurrencyRate": 1,
         "Total": subtotal,
         "BillDiscount": 0,
@@ -799,7 +799,7 @@ const Checkout = () => {
                       </td>
 
                       <td className='price'>
-                        S${(item.data.SellingCost * item.quantity).toFixed(2)}
+                        S$ {(item.data.SellingCost * item.quantity).toFixed(2)}
                       </td>
                     </tr>
                   )
@@ -810,15 +810,15 @@ const Checkout = () => {
 
           <div className='subtotal'>
             <h1>Qty Total</h1>
-            <h2>S${subtotal.toFixed(2)}</h2>
+            <h2>S$ {subtotal.toFixed(2)}</h2>
           </div>
           <div className='subtotal'>
             <h1>Shipping charges</h1>
-            <h2>S${shippingcost.toFixed(2)}</h2>
+            <h2>S$ {shippingcost.toFixed(2)}</h2>
           </div>
           <div className='subtotal'>
             <h1>Pay Total</h1>
-            <h2>S${(subtotal + shippingcost).toFixed(2)}</h2>
+            <h2>S$ {(subtotal + shippingcost).toFixed(2)}</h2>
           </div>
           {
               paymentmethod !== '' &&

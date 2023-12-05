@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState , useMemo  } from 'react'
 import './Navbar.css'
-import logo from '../../ASSETS/logo.png'
+import logo from '../../ASSETS/logo.png';
+import gif from '../../ASSETS/loaderGif.gif'
 import Dropdown from 'react-bootstrap/Dropdown'
 import { Link , useNavigate } from 'react-router-dom'
 import DropdownComponent from './DropdownComponent'
@@ -42,6 +43,8 @@ import LinearProgress from '@mui/material/LinearProgress';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Rating from '@mui/material/Rating';
+import Autocomplete from '@mui/material/Autocomplete';
+import InputLabel from '@mui/material/InputLabel';
 
 
 const style = {
@@ -57,6 +60,20 @@ const style = {
     minHeight: '85vh !important',
   };
   
+  const style2 = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    borderRadius:'8px',
+    p: 4,
+    zIndex:9999,
+    minHeight: '85vh !important',
+    display:'flex',
+    justifyContent:'center'
+  };
   
   const CustomPrevArrow = (props) => (
     <div className="custom-arrow custom-prev" onClick={props.onClick}>
@@ -440,39 +457,81 @@ const Navbar = () => {
     const [suggestions, setSuggestions] = useState([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
   
-    const getSuggestions = (inputValue) => {
 
-        let suggestionsList = [];
-    
-        if(products && products.length > 0){
-            products.map((item , index) => {
-                suggestionsList.push(item.Name)
-            })
+    const suggestionsList = useMemo(() => {
+        let list = [];
+        if (products && products.length > 0) {
+          list = products.map((item) => item.Name);
         }
-  
-      const filteredSuggestions = suggestionsList.filter((suggestion) =>
-        suggestion.toLowerCase().includes(inputValue.toLowerCase())
-      );
-  
-      return filteredSuggestions; 
-    };
-  
-    const handleChange = (e) => {
-      const inputValue = e.target.value;
-      setValue(inputValue);
-      if (inputValue.trim() === "") {
+        return list;
+      }, [products]);
+    
+      const getSuggestions = async (inputValue) => {
+        try {
+          const response = await fetch(`process.env.REACT_APP_BACKEND_URL + '/Product/GetAllWithImageV2?OrganizationId='+process.env.REACT_APP_BACKEND_ORGANIZATION+'&pageSize=2000'`);
+          const data = await response.json();
+    
+          if (data.Code === 200 && data.Status && data.Result) {
+            return data.Result.map((item) => item.Name);
+          }
+        } catch (error) {
+          console.error('Error fetching suggestions:', error);
+        }
+    
+        return [];
+      };
+    
+      const handleChange = async (e) => {
+        const inputValue = e.target.value;
+        setValue(inputValue);
+        
+        if (inputValue.trim() === '') {
+          setShowSuggestions(false);
+        } else {
+          const fetchedSuggestions = await getSuggestions(inputValue);
+          setSuggestions(fetchedSuggestions);
+          setShowSuggestions(true);
+        }
+      };
+    
+      const handleSuggestionClick = (suggestion) => {
+        setValue(suggestion);
+        setSuggestions([]);
         setShowSuggestions(false);
-      } else {
-        setSuggestions(getSuggestions(inputValue));
-        setShowSuggestions(true);
-      }
-    };
+      };
+    // const getSuggestions = (inputValue) => {
+
+    //     let suggestionsList = [];
+    
+    //     if(products && products.length > 0){
+    //         products.map((item , index) => {
+    //             suggestionsList.push(item.Name)
+    //         })
+    //     }
   
-    const handleSuggestionClick = (suggestion) => {
-      setValue(suggestion);
-      setSuggestions([]);
-      setShowSuggestions(false);
-    };
+    //   const filteredSuggestions = suggestionsList.filter((suggestion) =>
+    //     suggestion.toLowerCase().includes(inputValue.toLowerCase())
+    //   );
+  
+    //   return filteredSuggestions; 
+    // };
+  
+    // const handleChange = (e) => {
+    //   const inputValue = e.target.value;
+    //   setValue(inputValue);
+    //   if (inputValue.trim() === "") {
+    //     setShowSuggestions(false);
+    //   } else {
+    //     setSuggestions(getSuggestions(inputValue));
+    //     setShowSuggestions(true);
+    //   }
+    // };
+  
+    // const handleSuggestionClick = (suggestion) => {
+    //   setValue(suggestion);
+    //   setSuggestions([]);
+    //   setShowSuggestions(false);
+    // };
   
 
     const handleWishlist =() => {
@@ -602,6 +661,11 @@ const Navbar = () => {
         }
       };
 
+
+      const handleProductChange = (productCode) => {
+        console.log('Selected Product Code:', productCode);
+      };
+      
       
 
     return (
@@ -617,10 +681,10 @@ const Navbar = () => {
             aria-describedby="modal-modal-description"
             sx={{zIndex:'9999'}}
         >
-            <Box sx={style} className='pop-responsive'>
-                <CloseIcon sx={{ position:'relative' , float:'right'}} />
                 {productData ? (
                 <>
+                <Box sx={style} className='pop-responsive'>
+                <CloseIcon sx={{ position:'relative' , float:'right' , cursor:'pointer'}} onClick={handleClose} />
                              {productData && (
                 <Grid container width='98%' >
                     <Grid item sm={12} md={8} >
@@ -649,7 +713,7 @@ const Navbar = () => {
                     <Grid item sm={12} md={4}>
                         <Typography sx={{fontWeight:'500' , fontSize:'20px' , wordBreak:'break-all'}}>{productData.Name}</Typography>
                         {/* <Typography>1 each</Typography> */}
-                        <Typography sx={{fontWeight:'bolder', fontSize:'20px'}} >${productData.SellingCost}</Typography>
+                        <Typography sx={{fontWeight:'bolder', fontSize:'20px'}} >S${productData.SellingCost}</Typography>
                         <Typography sx={{color:'#F98F60' , padding:'10px 0'}}>only items left</Typography>
                         <Grid className="calc-box" container sx={{borderRadius:'5px'}}>
                             <Grid item>
@@ -693,7 +757,7 @@ const Navbar = () => {
                                 <ShoppingBagOutlinedIcon />
                             </Grid>
                             <Grid item>
-                                <Typography  sx={{fontWeight:'bold'}}>Add to Cart</Typography>
+                                <Typography  sx={{fontWeight:'bold' , cursor:'pointer'}}>Add to Cart</Typography>
                             </Grid>
                         </Grid>
                         {/* <Grid container direction='row' justifyContent='space-between'>
@@ -787,7 +851,7 @@ const Navbar = () => {
                                                 <Grid item  sx={{zIndex:'9999' , paddingTop:'10px' }} >
                                                     <Grid container sx={{ display:'flex' , flexDirection:'column' , justifyContent:'space-between' ,  minHeight:'150px'}} >
                                                         <Grid item>
-                                                            <Typography sx={{fontWeight:'bold' , lineHeight:'1.5rem' ,fontSize:'1rem'}}>${item.PcsPrice} - ${item.SellingCost}</Typography>
+                                                            <Typography sx={{fontWeight:'bold' , lineHeight:'1.5rem' ,fontSize:'1rem'}}>S${item.PcsPrice} - S${item.SellingCost}</Typography>
                                                             <Typography sx={{padding:' 10px 0px' , color:'#595959' , fontSize:'14px' , wordBreak:'break-all'}}>{item.Name}</Typography>
                                                         </Grid>
                                                         <Grid item>
@@ -809,14 +873,18 @@ const Navbar = () => {
                       <></>
                     )}
                 </Grid> 
+                </Box>
                 </>
                 ):(
                   <>
-                    <LinearProgress />
+                <Box sx={style2} className='pop-responsive'>
+                  <div style={{display:'flex' , justifyContent:'center'}}>
+                    <img src={gif} alt="Loading..." />
+                  </div>
+                  </Box>
+
                   </>
                 )}
-
-            </Box>
         </Modal>
 
 
@@ -840,20 +908,29 @@ const Navbar = () => {
 
 
     <div className="autocomplete-search-bar searchbar">
-        <input
-          type="text"
-          placeholder="Search for products and categories" className='search'
-          value={value}
-          onChange={handleChange}
+        <Autocomplete
+            disablePortal
+            className='search'
+            options={products && Array.isArray(products) ? products : []}
+            getOptionLabel={(option) => option.ProductName}
+            sx={{ width: '100%' , background:'white' , border:'none' }}
+            renderInput={(params) => (
+                <TextField
+                {...params}
+                label='search for products and categories'
+                InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                    <InputAdornment position="end">
+                        <SearchIcon />
+                    </InputAdornment>
+                    ),
+                }}
+                />
+            )}
+            onChange={(event, newValue) => handleOpen(newValue?.ProductCode || '')}
         />
-        <Link to={`/search/${value}`}>
-            <button onClick={handleClick}>
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                </svg>
-            </button>
-        </Link>
-      {showSuggestions && suggestions.length > 0 && (
+      {/* {showSuggestions && suggestions.length > 0 && (
         <Grid className='suggestPop'>
          <ul className="suggestion-list" style={{listStyleType:'none' , padding:'20px'}}>
           {suggestions.map((suggestion, index) => (
@@ -863,7 +940,7 @@ const Navbar = () => {
           ))}
         </ul>
         </Grid>
-      )}
+      )} */}
     </div>
 
     

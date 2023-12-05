@@ -468,7 +468,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                     <Grid item sm={12} md={4}>
                         <Typography sx={{fontWeight:'500' , fontSize:'18px' , wordBreak:'break-all'}}>{productData.Name}</Typography>
                         {/* <Typography>1 each</Typography> */}
-                        <Typography sx={{fontWeight:'bolder', fontSize:'20px'}} >S${productData.SellingCost}</Typography>
+                        <Typography sx={{fontWeight:'bolder', fontSize:'20px'}} >S$ {productData.SellingCost}</Typography>
                         <Typography sx={{color:'#F98F60' , padding:'10px 0'}}>only items left</Typography>
                         <Grid className="calc-box" container sx={{borderRadius:'5px'}}>
                             <Grid item>
@@ -619,7 +619,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                                                 <Grid item  sx={{zIndex:'9999' , paddingTop:'10px' }} >
                                                     <Grid container sx={{ display:'flex' , flexDirection:'column' , justifyContent:'space-between' ,  minHeight:'150px'}} >
                                                         <Grid item>
-                                                            <Typography sx={{fontWeight:'bold' , lineHeight:'1.5rem' ,fontSize:'1rem'}}>S${item.PcsPrice} - S${item.SellingCost}</Typography>
+                                                            <Typography sx={{fontWeight:'bold' , lineHeight:'1.5rem' ,fontSize:'1rem'}}>S$ {item.PcsPrice} - S$ {item.SellingCost}</Typography>
                                                             <Typography sx={{padding:' 10px 0px' , color:'#595959' , fontSize:'14px' , wordBreak:'break-all'}}>{item.Name}</Typography>
                                                         </Grid>
                                                         <Grid item>
@@ -678,7 +678,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                             <Typography className='ProdName' onClick={(e) => {handleOpen(itemdata.data.ProductCode)}}>{itemdata.data.ProductName}</Typography>
                         </Grid>
                         <Grid item md={3} sx={{display:'flex' , justifyContent:'center'}}>
-                            <Typography sx={{fontSize:'14px' , fontWeight:'bold'}}>S${(itemdata?.data?.SellingCost * itemdata.quantity).toFixed(2)}</Typography>
+                            <Typography sx={{fontSize:'14px' , fontWeight:'bold'}}>S$ {(itemdata?.data?.SellingCost * itemdata.quantity).toFixed(2)}</Typography>
                         </Grid>
                     </Grid>
                 </Grid>
