@@ -32,6 +32,7 @@ const AuthPopup = () => {
     const [confirmPassword , setconfirmPassword ] = useState("");
     const [ existMailerr , setExistingMailerr] = useState(false);
     const [sendDisable , setSendDisabled] =  useState(false);
+    const [sendDisable1 , setSendDisabled1] =  useState(false);
     const [userData , setUserdata] = useState([]);
     const [date , setDate] = useState("");
     const [createDisable , setCreateDisable] = useState(true);
@@ -79,6 +80,14 @@ const AuthPopup = () => {
         }, count * 1000); 
       };
     
+      const setTimeDisable1 = () => {
+        setSendDisabled1(true);
+    
+        setTimeout(() => {
+          setSendDisabled1(false);
+        }, count * 1000); 
+      };
+
       const decrementCount = () => {
         if (count > 0) {
           setCount(count - 1);
@@ -97,6 +106,13 @@ const AuthPopup = () => {
         decrementCount();
        }
     } , [showVerifySection])
+
+
+    useEffect(()=> {
+      if(showPasswordCreate === true){
+        decrementCount();
+       }
+    },[showPasswordCreate])
 
 
     const handleLogin = async () => {
@@ -242,7 +258,9 @@ const AuthPopup = () => {
     const getdatafrompostalcode = async () => {
 
 
-        let url = `https://developers.onemap.sg/commonapi/search?searchVal=${signupdata.PostalCode}&returnGeom=N&getAddrDetails=Y&pageNum=1`
+        // let url = `https://developers.onemap.sg/commonapi/search?searchVal=${signupdata.PostalCode}&returnGeom=N&getAddrDetails=Y&pageNum=1`
+        let url = `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${signupdata.PostalCode}&returnGeom=N&getAddrDetails=Y&pageNum=1`;
+
         const response = await fetch(url);
         const data = await response.json();
         // console.log(data.results[0])
@@ -389,6 +407,7 @@ const AuthPopup = () => {
       return;
     }
 
+    setSendBtnName(<CircularProgress size='2rem' />);
 
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/B2CCustomerRegister/GetbyEmail?OrganizationId=3&EmailId=${email}`, {   
       method: 'GET',
@@ -476,7 +495,7 @@ const AuthPopup = () => {
         autoClose: 1000,
       })
     }else{
-
+      setSendBtnName(<CircularProgress size='2rem' />);
       setUserdata(data.Data[0])
       const apiEndpoint = `${process.env.REACT_APP_BACKEND_URL}/SendOTP/SendOTP?OrganizationId=3&Email=${forgotData.Email}`;
       const options = {
@@ -500,7 +519,7 @@ const AuthPopup = () => {
         setSendBtnName("Resend");
         setverify(data.Data);
         setForgotOtpVerify(true);
-        setTimeDisable()
+        setTimeDisable1()
         setTimeout(() => {
           setOtpSentMessage(false);
           decrementCount();
@@ -561,7 +580,7 @@ const AuthPopup = () => {
       setOtpError(false); // Reset OTP error flag if OTP is verified successfully
       setForgotOtpVerify(false);
       setCreatePassword(true)
-      setSendDisabled(true);
+      setSendDisabled1(true);
       setShowSuccessMessage(true);
       setTimeout(() => {
         setShowSuccessMessage(false);
@@ -776,12 +795,12 @@ const AuthPopup = () => {
                                     >Forgot Password ?</a>
                             </div>
 
-                            <button className='btn'
+                            <button className='btn' style={{padding: boxLoad ? '0px' : '15px'}}
                                 onClick={(e) => {
                                     e.preventDefault()
                                     handleLogin()
                                 }}
-                            >{boxLoad ? <CircularProgress sx={{color:'white'}} /> : "Sign In"}</button>
+                            >{boxLoad ? <CircularProgress size='2rem' sx={{color:'white'}} /> : "Sign In"}</button>
                         </form> 
                     </div>
                 }
@@ -817,7 +836,7 @@ const AuthPopup = () => {
                       setForgotData({ ...forgotData, Email: e.target.value });
                     }}
                   />
-                  <button className='btn send-otp-button' disabled={sendDisable} onClick={handleForgotSendOTP}>
+                  <button className='btn send-otp-button' disabled={sendDisable1} onClick={handleForgotSendOTP}>
                     {sendbtnName}
                   </button>
            </div>
@@ -1095,7 +1114,8 @@ const AuthPopup = () => {
       className='btn send-otp-button'
       onClick={async (e) => {
         e.preventDefault();
-        let url = `https://developers.onemap.sg/commonapi/search?searchVal=${postalcode}&returnGeom=N&getAddrDetails=Y&pageNum=1`;
+        let url = `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${postalcode}&returnGeom=N&getAddrDetails=Y&pageNum=1`;
+        // let url = `https://developers.onemap.sg/commonapi/search?searchVal=${postalcode}&returnGeom=N&getAddrDetails=Y&pageNum=1`;
         const response = await fetch(url);
         const data = await response.json();
 
@@ -1119,7 +1139,7 @@ const AuthPopup = () => {
 </div>
 
           <div className='formcont'>
-            <label htmlFor='addressline1'>Address Line 1</label>
+            <label htmlFor='addressline1'>Address Line 1 <span className='mandatory'>*</span></label>
             <input type='text' name='addressline1' id='addressline1' placeholder='Enter alternative address'
               value={signupdata.AddressLine1}
               onChange={(e) => {

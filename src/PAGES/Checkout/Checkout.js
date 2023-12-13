@@ -1,4 +1,4 @@
-import React from 'react'
+import React , {useEffect} from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilState } from 'recoil'
 import AddNewAddress from '../../COMPONENTS/Address/AddNewAddress'
@@ -578,6 +578,11 @@ const Checkout = () => {
   const [cardDetailsPopup, setcardDetailsPopup] = useRecoilState(cardDetailsPopupState)
   const [cartPopupShow, setCartPopupShow] = useRecoilState(cartPopupState);
 
+  useEffect(() => {
+    if (savedaddresses.length > 0) {
+      setselectedaddress(savedaddresses[0]);
+    }
+  }, [savedaddresses]);
   return (
     <div className='checkoutpage'>
 
@@ -799,7 +804,7 @@ const Checkout = () => {
                       </td>
 
                       <td className='price'>
-                        S$ {(item.data.SellingCost * item.quantity).toFixed(2)}
+                        S${(item.data.SellingCost * item.quantity).toFixed(2)}
                       </td>
                     </tr>
                   )
@@ -810,15 +815,15 @@ const Checkout = () => {
 
           <div className='subtotal'>
             <h1>Qty Total</h1>
-            <h2>S$ {subtotal.toFixed(2)}</h2>
+            <h2>S${subtotal.toFixed(2)}</h2>
           </div>
           <div className='subtotal'>
             <h1>Shipping charges</h1>
-            <h2>S$ {shippingcost.toFixed(2)}</h2>
+            <h2>S${shippingcost.toFixed(2)}</h2>
           </div>
           <div className='subtotal'>
             <h1>Pay Total</h1>
-            <h2>S$ {(subtotal + shippingcost).toFixed(2)}</h2>
+            <h2>S${(subtotal + shippingcost).toFixed(2)}</h2>
           </div>
           {
               paymentmethod !== '' &&

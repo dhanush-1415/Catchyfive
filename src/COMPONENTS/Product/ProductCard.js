@@ -50,7 +50,6 @@ const style = {
   boxShadow: 24,
   borderRadius:'8px',
   p: 4,
-  zIndex:9999,
   minHeight: '85vh !important',
 };
 
@@ -63,7 +62,6 @@ const style2 = {
   boxShadow: 24,
   borderRadius:'8px',
   p: 4,
-  zIndex:9999,
   minHeight: '85vh !important',
   display:'flex',
   justifyContent:'center'
@@ -281,6 +279,12 @@ const deleteitem = () => {
     toast.success(message, {
       position: "bottom-right",
       autoClose: 1000,
+      hideProgressBar: true,
+      pauseOnHover: true,
+      closeOnClick: true,
+      closeButton: false,
+      newestOnTop: true,
+      containerId: 'toast-container',
     });
   };
 
@@ -637,11 +641,51 @@ const deleteitem = () => {
 
 
   
+  // const handleOpen = (code) => {
+  //   getProductById(code);
+  //   getProducts();
+  //   setOpen(true);
+  // };
+
+
+  
   const handleOpen = (code) => {
+    // Fetch product details using the product code
     getProductById(code);
+
+    // Fetch the current cart data from local storage
+    const cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+    // Check if the product is already in the cart
+    const productInCart = cartArray.some((userCart) => {
+        return userCart.CartItems.some((item) => item.data.ProductCode === code);
+    });
+
+    // If the product is in the cart, set showfunc to true and update popCount
+    if (productInCart) {
+        const userData = JSON.parse(localStorage.getItem('token'));
+        const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+
+        if (userId) {
+            const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+
+            if (userCart) {
+                const itemInCart = userCart.CartItems.find((item) => item.data.ProductCode === code);
+
+                if (itemInCart) {
+                    setPopCount(itemInCart.quantity);
+                    setShowfunc(true);
+                }
+            }
+        }
+    } else {
+        // If the product is not in the cart, set showfunc to false
+        setShowfunc(false);
+    }
+
     getProducts();
     setOpen(true);
-  };
+};
   
   const handleClose = () => setOpen(false);
 
@@ -667,7 +711,13 @@ const deleteitem = () => {
 //     getcartitems();
 // }
 
+const [showfunc , setShowfunc ] = useState(false);
+
+
 const addtocartPop = () => {
+
+  setShowfunc(true)
+
   const userData = JSON.parse(localStorage.getItem('token'));
   const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
 
@@ -705,6 +755,52 @@ const addtocartPop = () => {
 };
 
 
+
+const removeFromCart = () => {
+  setShowfunc(false)
+  const userData = JSON.parse(localStorage.getItem('token'));
+  const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+
+  let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+
+  if (userId) {
+      const userCartIndex = cartArray.findIndex((userCart) => userCart.UserId === userId);
+
+      if (userCartIndex !== -1) {
+          const userCart = cartArray[userCartIndex];
+          const itemIndex = userCart.CartItems.findIndex(item => item.data.ProductCode === productData.ProductCode);
+
+          if (itemIndex !== -1) {
+              // Remove the item from the cart
+              userCart.CartItems.splice(itemIndex, 1);
+
+              // If the cart is empty after removing the item, remove the entire cart entry
+              if (userCart.CartItems.length === 0) {
+                  cartArray.splice(userCartIndex, 1);
+              }
+
+              localStorage.setItem('cartArray', JSON.stringify(cartArray));
+
+              toast.success('Product removed from cart', {
+                  position: "bottom-right",
+                  autoClose: 1000,
+              });
+
+              getcartitems(); // Assuming you have a function to update cart quantity in UI
+          } else {
+              console.warn('Product not found in the cart');
+          }
+      } else {
+          console.warn('User has no cart entry');
+      }
+  } else {
+      // Handle the case where the user is not logged in
+      // You may want to show a message or redirect the user to the login page
+      console.log('User not logged in');
+  }
+};
+
+
   return (
     <>
 
@@ -721,6 +817,7 @@ const addtocartPop = () => {
                 {productData ? (
                 <>
                 <Box sx={style} className='pop-responsive'>
+                <ToastContainer />
                 <CloseIcon sx={{ position:'relative' , float:'right' , cursor:'pointer'}} onClick={handleClose} />
                              {productData && (
                 <Grid container width='98%' >
@@ -751,7 +848,8 @@ const addtocartPop = () => {
                         <Typography sx={{fontWeight:'500' , fontSize:'20px' , wordBreak:'break-all'}}>{productData.Name}</Typography>
                         {/* <Typography>1 each</Typography> */}
                         <Typography sx={{fontWeight:'bolder', fontSize:'20px'}} >S${productData.SellingCost}</Typography>
-                        <Typography sx={{color:'#F98F60' , padding:'10px 0'}}>only items left</Typography>
+                        <Typography sx={{color:'#F98F60' , padding:'10px 0'}}>only few items left</Typography>
+                        {showfunc ? ( 
                         <Grid className="calc-box" container sx={{borderRadius:'5px'}}>
                             <Grid item>
                                 <RemoveIcon sx={{fontSize:'30px' , cursor:'pointer'}} 
@@ -763,7 +861,7 @@ const addtocartPop = () => {
                                 />
                             </Grid>
                             <Grid item>
-                                <Typography  sx={{fontSize:'20px'}}>{popCount}</Typography>
+                                <Typography  sx={{fontSize:'22px'}}>{popCount}</Typography>
                             </Grid>
                             <Grid item> 
                               <AddIcon   sx={{fontSize:'30px' , cursor:'pointer'}} 
@@ -786,27 +884,59 @@ const addtocartPop = () => {
                               />
                             </Grid>
                         </Grid>
-                        <Grid className="cart-box" container 
+                        ):(
+                            <>
+                            </>
+                        )}
+                        {showfunc ? (
+                          <Grid className="cart-box" container 
                           onClick={() => {
-                              addtocartPop()
+                            removeFromCart()
                           }}>
                             <Grid item>
                                 <ShoppingBagOutlinedIcon />
                             </Grid>
                             <Grid item>
-                                <Typography  sx={{fontWeight:'bold' , cursor:'pointer'}}>Add to Cart</Typography>
+                                <Typography  sx={{fontWeight:'bold'}}>Remove from Cart</Typography>
                             </Grid>
-                        </Grid>
-                        {/* <Grid container direction='row' justifyContent='space-between'>
+                            </Grid>
+                        ):(
+                              <Grid className="cart-box" container 
+                              onClick={() => {
+                                  addtocartPop()
+                              }}>
+                                <Grid item>
+                                    <ShoppingBagOutlinedIcon />
+                                </Grid>
+                                <Grid item>
+                                    <Typography  sx={{fontWeight:'bold'}}>Add to Cart</Typography>
+                                </Grid>
+                            </Grid>
+                        )}
+                        <Grid container direction='row' justifyContent='space-between'>
+
+                        {
+                             isinwhishlist ? (
+                              <Grid className="pop-box" item md={5.5}>
+                              < FavoriteIcon sx={{float:'right'}} onClick={removewhishlist} />
+                              <Typography> Favourite</Typography>
+                              </Grid> 
+                             ):(
+                              <Grid className="pop-box" item md={5.5}>
+                              <FavoriteBorderIcon sx={{float:'right'}} onClick={addtowhishlist} />
+                              <Typography> Favourite</Typography>
+                            </Grid> 
+                             )
+                          }
                             <Grid className="pop-box" item md={5.5}>
-                                <FavoriteBorderIcon />
-                                <Typography>Wishlist</Typography>
+                                <FavoriteBorderIcon sx={{float:'right'}} onClick={addtowhishlist} />
+                                <Typography> Favourite</Typography>
                             </Grid> 
                             <Grid className="pop-box" item md={5.5}>
                                 < ReplyOutlinedIcon />
                                 <Typography>Share</Typography>
                             </Grid>
-                        </Grid> */}
+                        </Grid>
                         <Grid pt={2}>
                             <Typography sx={{fontWeight:'600'}}>Product Details:</Typography>
                         </Grid>
@@ -946,7 +1076,11 @@ const addtocartPop = () => {
                               < FavoriteBorderIcon sx={{float:'right'}} onClick={addtowhishlist} />
                              )
                           }
+                          {open ? (
+                            <></>
+                          ):(
                           <ToastContainer />
+                          )}
                           <Grid pb={2} item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                             onClick={(e) => {handleOpen(data.ProductCode)}}
                           >

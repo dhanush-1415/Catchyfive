@@ -7,6 +7,13 @@ import './Sucess.css';
 const Sucess = () => {
   const [ordersuccessorderid, setordersuccessorderid] = React.useState(null);
   const preorderarray = JSON.parse(localStorage.getItem('preorderarray'));
+
+
+  const orderDetailArray = preorderarray.OrderDetail;
+
+// Calculate the total quantity
+  const totalQuantity = orderDetailArray.reduce((sum, orderItem) => sum + orderItem.Qty, 0);
+
   //localStorage.removeItem('preorderarray');
  // const [reloadnavbar, setreloadnavbar] = React.useState(false);
   const [placeorderCalled, setPlaceorderCalled] = React.useState(false);
@@ -219,23 +226,26 @@ preorderarray.OrderDetail && preorderarray.OrderDetail.map((item, index) => {
 
           <div className='right'>
             <div>
-              <p>Qty total</p>
-              <p>S$ {converttofloat(preorderarray.SubTotal).toFixed(2)}</p>
+              <p style={{textAlign:'left'}}>Qty total</p>
+              <p style={{textAlign:'left'}}>{totalQuantity} items</p>
+            </div>
+            <div>
+              <p style={{textAlign:'left'}}>Qty amount</p>
+              <p style={{textAlign:'left'}}>S$ {converttofloat(preorderarray.SubTotal).toFixed(2)}</p>
+            </div>
+            <div>
+              <p style={{textAlign:'left'}} >Shipping charge</p>
+              <p style={{textAlign:'left'}} >S$ {converttofloat(preorderarray.ShippingCost).toFixed(2)}</p>
             </div>
 
             <div>
-              <p>Shipping charge</p>
-              <p>S$ {converttofloat(preorderarray.ShippingCost).toFixed(2)}</p>
+              <p style={{textAlign:'left'}} >Tax</p>
+              <p style={{textAlign:'left'}} >S$ {converttofloat(preorderarray.Tax).toFixed(2)}</p>
             </div>
 
             <div>
-              <p>Tax</p>
-              <p>S$ {converttofloat(preorderarray.Tax).toFixed(2)}</p>
-            </div>
-
-            <div>
-              <p>Pay amount</p>
-              <p>S$ {converttofloat(preorderarray.SubTotal + preorderarray.ShippingCost + preorderarray.Tax ).toFixed(2)}</p>
+              <p style={{textAlign:'left'}} >Pay amount</p>
+              <p style={{textAlign:'left'}} >S$ {converttofloat(preorderarray.SubTotal + preorderarray.ShippingCost + preorderarray.Tax ).toFixed(2)}</p>
             </div>
           </div>
         </div>

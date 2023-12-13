@@ -7,8 +7,9 @@ import { authPopupState } from '../../Providers/AuthPopupProvider'
 import AuthPopup from '../Auth/AuthPopup'
 
 const ChangePassword = ({ userid, oldpass, emailid }) => {
+  
 
-  console.log(userid, oldpass)
+  console.log(userid, oldpass , "PPPPPPPPPPPPPPPPP")
 
   const [oldpassword, setoldpassword] = React.useState('')
   const [newpassword, setnewpassword] = React.useState('')

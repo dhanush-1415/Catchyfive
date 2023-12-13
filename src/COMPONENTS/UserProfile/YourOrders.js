@@ -4,6 +4,8 @@ import { useRecoilState } from 'recoil'
 import { orderSuccessfulProvider } from '../../Providers/OrderSuccessfulProvider'
 import OrderSuccessful from '../OrderSuccessful/OrderSuccessful'
 import { toast } from 'react-toastify'
+import { Grid, Paper, Typography, Button , TextField } from '@mui/material';
+
 
 const YourOrders = ({ userid, EmailId }) => {
     const data = [
@@ -154,11 +156,11 @@ const YourOrders = ({ userid, EmailId }) => {
             <table>
                 <thead>
                     <tr>
-                        <th>Order ID</th>
-                        <th>Order Date</th>
-                        <th>Order Status</th>
-                        <th>Order Total</th>
-                        <th>Order Action</th>
+                        <th style={{textAlign:'center'}}>Order ID</th>
+                        <th style={{textAlign:'center'}}>Order Date</th>
+                        <th style={{textAlign:'center'}}>Order Status</th>
+                        <th style={{textAlign:'center'}}>Order Total</th>
+                        <th style={{textAlign:'center'}}>Order Action</th>
                     </tr>
                 </thead>
 
@@ -178,7 +180,10 @@ const YourOrders = ({ userid, EmailId }) => {
                                     {item.status}</td>
                                 <td>S${item.NetTotal
                                 }</td>
-                                <td style={{maxWidth:'15px'}}><button
+                                <td style={{maxWidth:'250px'}}>
+                                    <Grid container direction='row'>
+                                        <Grid item>
+                                        <button
                                     className='mainbutton1'
                                     style={{padding:'3px 13px'}}
                                 // onClick={() => getsuccessfulorder(item.OrderNo)}
@@ -188,13 +193,18 @@ const YourOrders = ({ userid, EmailId }) => {
                                     setordersuccessorderid(item.OrderNo)
                                     setordersuccessmessage(item.OrderNo)
                                 }}
-                                >View</button></td>
-                                <td><button
+                                >View</button>
+                                        </Grid>
+                                        <Grid item ml={1}>
+                                        <button
                                     className='mainbutton1'
                                     style={{padding:'3px 13px'}}
                                 // onClick={() => getsuccessfulorder(item.OrderNo)}
                                 
-                                >ReOrder</button></td>
+                                >ReOrder</button>
+                                        </Grid>
+                                    </Grid>
+                                    </td>
                             </tr>
                         )
                     })}

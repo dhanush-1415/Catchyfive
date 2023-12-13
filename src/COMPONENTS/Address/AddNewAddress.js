@@ -214,7 +214,8 @@ const AddNewAddress = ({ user, getaddress }) => {
 
     // Clear previous errors
     setErrorPostalCode('');
-    let url = `https://developers.onemap.sg/commonapi/search?searchVal=${postalcode}&returnGeom=N&getAddrDetails=Y&pageNum=1`;
+    // let url = `https://developers.onemap.sg/commonapi/search?searchVal=${postalcode}&returnGeom=N&getAddrDetails=Y&pageNum=1`;
+    let url = `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${postalcode}&returnGeom=N&getAddrDetails=Y&pageNum=1`;
     const response = await fetch(url);
     const data = await response.json();
 console.log('API response:', data);

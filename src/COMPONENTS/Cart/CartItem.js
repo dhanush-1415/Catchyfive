@@ -35,6 +35,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import { toast, ToastContainer } from 'react-toastify'
 import CloseIcon from '@mui/icons-material/Close';
 import Divider from '@mui/material/Divider';
+import { useEffect } from 'react'
 
 
 const style = {
@@ -70,8 +71,8 @@ const CartItem = ({ itemdata, getcartdata }) => {
     const [showdelete, setshowdelete] = useState(false)
     const [cartreload, setcartreload] = useRecoilState(cartReloadState)
     const [cartdataquantity, setcartdataquantity] = useRecoilState(cartQuantity)
-    const [open, setOpen] = React.useState(false);
-    const [showreview, setshowreview] = React.useState(false)
+    const [open, setOpen] = useState(false);
+    const [showreview, setshowreview] = useState(false)
 
     const [productData , setProductdata] = useState(null);
     const [popCount, setPopCount] = useState(1);
@@ -140,38 +141,60 @@ const CartItem = ({ itemdata, getcartdata }) => {
           })
     }
 
-    const handleOpen = (code) => {
+    // const handleOpen = (code) => {
+    //     getProductById(code);
+    //     getProducts();
+    //     setOpen(true);
+    //   };
+
+
+      const handleOpen = (code) => {
+        // Fetch product details using the product code
         getProductById(code);
+    
+        // Fetch the current cart data from local storage
+        const cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+    
+        // Check if the product is already in the cart
+        const productInCart = cartArray.some((userCart) => {
+            return userCart.CartItems.some((item) => item.data.ProductCode === code);
+        });
+    
+        // If the product is in the cart, set showfunc to true and update popCount
+        if (productInCart) {
+            const userData = JSON.parse(localStorage.getItem('token'));
+            const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+    
+            if (userId) {
+                const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+    
+                if (userCart) {
+                    const itemInCart = userCart.CartItems.find((item) => item.data.ProductCode === code);
+    
+                    if (itemInCart) {
+                        setPopCount(itemInCart.quantity);
+                        setShowfunc(true);
+                    }
+                }
+            }
+        } else {
+            // If the product is not in the cart, set showfunc to false
+            setShowfunc(false);
+        }
+    
         getProducts();
         setOpen(true);
-      };
-
+    };
+    
 
       const handleClose = () => setOpen(false);
 
-
-    //   const addtocartPop = () => {
-    //     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
-    //     const itemInCart = cart.find(item => item.data.ProductCode === productData.ProductCode);
-    
-    //     if (itemInCart) {
-    //         itemInCart.quantity += count;
-    //     } else {
-    //         cart.push({ data: productData, quantity: count });
-    //     }
-    
-    //     localStorage.setItem('cart', JSON.stringify(cart));
-    
-    //     toast.success('Product added to cart', {
-    //         position: "bottom-right",
-    //         autoClose: 1000,
-    //     });
-    
-    //     getcartitems();
     // }
 
+    const [showfunc , setShowfunc ] = useState(false);
+
     const addtocartPop = () => {
+        setShowfunc(true)
         const userData = JSON.parse(localStorage.getItem('token'));
         const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
     
@@ -211,19 +234,52 @@ const CartItem = ({ itemdata, getcartdata }) => {
     
 
 
-    // const getcartitems = () => {
-    //     let cart = JSON.parse(localStorage.getItem('cart'))
-    //     if (cart !== null) {
-    //         let qty = 0;
-    //         cart.forEach((item) => {
-    //             qty += item.quantity
-    //         })
-    //         setcartdataquantity(qty)
-    //     }
-    //     else {
-    //         setcartdataquantity(0)
-    //     }
-    // }
+    const removeFromCart = () => {
+        setShowfunc(false)
+        const userData = JSON.parse(localStorage.getItem('token'));
+        const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+    
+        let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+    
+        if (userId) {
+            const userCartIndex = cartArray.findIndex((userCart) => userCart.UserId === userId);
+    
+            if (userCartIndex !== -1) {
+                const userCart = cartArray[userCartIndex];
+                const itemIndex = userCart.CartItems.findIndex(item => item.data.ProductCode === productData.ProductCode);
+    
+                if (itemIndex !== -1) {
+                    // Remove the item from the cart
+                    userCart.CartItems.splice(itemIndex, 1);
+    
+                    // If the cart is empty after removing the item, remove the entire cart entry
+                    if (userCart.CartItems.length === 0) {
+                        cartArray.splice(userCartIndex, 1);
+                    }
+    
+                    localStorage.setItem('cartArray', JSON.stringify(cartArray));
+    
+                    toast.success('Product removed from cart', {
+                        position: "bottom-right",
+                        autoClose: 1000,
+                    });
+    
+                    getcartitems(); // Assuming you have a function to update cart quantity in UI
+                } else {
+                    console.warn('Product not found in the cart');
+                }
+            } else {
+                console.warn('User has no cart entry');
+            }
+        } else {
+            // Handle the case where the user is not logged in
+            // You may want to show a message or redirect the user to the login page
+            console.log('User not logged in');
+        }
+    };
+    
+
+
 
     const getcartitems = () => {
         const userData = JSON.parse(localStorage.getItem('token'));
@@ -252,16 +308,6 @@ const CartItem = ({ itemdata, getcartdata }) => {
     
 
 
-    // const deleteitem = () => {
-    //     let cart = JSON.parse(localStorage.getItem('cart'));
-    //     let newcart = cart.filter((item) => item.data.ProductCode !== itemdata.data.ProductCode);
-    
-    //     localStorage.setItem('cart', JSON.stringify(newcart));
-    
-    //     // Refresh cart data and items
-    //     getcartdata();
-    //     getcartitems();
-    // };
     
 
     const deleteitem = () => {
@@ -282,18 +328,6 @@ const CartItem = ({ itemdata, getcartdata }) => {
              getcartitems();        }
     };
     
-
-    // const increaseqty = () => {
-    //     let cart = JSON.parse(localStorage.getItem('cart'))
-    //     cart.forEach((item) => {
-    //         if (item.data.ProductCode === itemdata.data.ProductCode) {
-    //             item.quantity = item.quantity + 1
-    //         }
-    //     })
-    //     localStorage.setItem('cart', JSON.stringify(cart))
-    //     getcartdata()
-    //     getcartitems()
-    // }
 
 
     const increaseqty = () => {
@@ -316,39 +350,14 @@ const CartItem = ({ itemdata, getcartdata }) => {
             localStorage.setItem('cartArray', JSON.stringify(cartArray));
             getcartdata()
             getcartitems()
+
+            toast.success('Product count increassed', {
+                position: "bottom-right",
+                autoClose: 1000,
+            });
         }
     };
     
-
-    // const decreaseqty = () => {
-    //     let cart = JSON.parse(localStorage.getItem('cart'));
-    //     const updatedCart = [];
-    
-    //     cart.forEach((item) => {
-    //         if (item.data.ProductCode === itemdata.data.ProductCode) {
-    //             if (item.quantity > 1) {
-    //                 item.quantity = item.quantity - 1;
-    //             } else {
-    //                 // If quantity is 1, remove the item from the cart
-    //                 deleteitem();
-    //                 return; // Exit the loop early since the item is removed
-    //             }
-    //         }
-    
-    //         // Keep items that are not the one being decreased or have a quantity greater than 1
-    //         if (item.quantity > 0) {
-    //             updatedCart.push(item);
-    //         }
-    //     });
-    
-    //     // Update the cart in local storage
-    //     localStorage.setItem('cart', JSON.stringify(updatedCart));
-    
-    //     // Refresh cart data and items
-    //     getcartdata();
-    //     getcartitems();
-    // };
-
 
 
     const decreaseqty = () => {
@@ -366,6 +375,10 @@ const CartItem = ({ itemdata, getcartdata }) => {
                     if (item.data.ProductCode === itemdata.data.ProductCode) {
                         if (item.quantity > 1) {
                             item.quantity = item.quantity - 1;
+                            toast.success('Product count decreased', {
+                                position: "bottom-right",
+                                autoClose: 1000,
+                            });
                         } else {
                             // If quantity is 1, remove the item from the cart
                             deleteitem(); // Assuming you have a function to delete the item
@@ -388,42 +401,6 @@ const CartItem = ({ itemdata, getcartdata }) => {
     };
     
     
-    
-
-    // const deleteitem = () => {
-    //     let cart = JSON.parse(localStorage.getItem('cart'))
-    //     let newcart = cart.filter((item) => item.data.ProductCode !== itemdata.data.ProductCode)
-    //     localStorage.setItem('cart', JSON.stringify(newcart))
-    //     // setcartreload(!cartreload)
-    //     getcartdata()
-    //     getcartitems()
-    // }
-
-
-    // const increaseqty = () => {
-    //     let cart = JSON.parse(localStorage.getItem('cart'))
-    //     cart.forEach((item) => {
-    //         if (item.data.ProductCode === itemdata.data.ProductCode) {
-    //             item.quantity = item.quantity + 1
-    //         }
-    //     })
-    //     localStorage.setItem('cart', JSON.stringify(cart))
-    //     getcartdata()
-    //     getcartitems()
-    // }
-    
-
-    // const decreaseqty = () => {
-    //     let cart = JSON.parse(localStorage.getItem('cart'))
-    //     cart.forEach((item) => {
-    //         if (item.data.ProductCode === itemdata.data.ProductCode && item.quantity > 1) {
-    //             item.quantity = item.quantity - 1
-    //         }
-    //     })
-    //     localStorage.setItem('cart', JSON.stringify(cart))
-    //     getcartdata()
-    //     getcartitems()
-    // }
 
     const [cartPopupShow, setCartPopupShow] = useRecoilState(cartPopupState);
     return (
@@ -441,7 +418,10 @@ const CartItem = ({ itemdata, getcartdata }) => {
                 {productData ? (
                 <>
             {productData && (
+                <>
+                <CloseIcon sx={{ position:'relative' , float:'right' , cursor:'pointer'}} onClick={handleClose} />
                 <Grid container width='98%' >
+                    <ToastContainer />
                     <Grid item sm={12} md={8} >
                       <Grid container direction='row'>
                         <Grid item md={2.5} sx={{display:'flex' , justifyContent:'center' , alignItems:'flex-start'}}>
@@ -470,6 +450,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                         {/* <Typography>1 each</Typography> */}
                         <Typography sx={{fontWeight:'bolder', fontSize:'20px'}} >S$ {productData.SellingCost}</Typography>
                         <Typography sx={{color:'#F98F60' , padding:'10px 0'}}>only items left</Typography>
+                        {showfunc ? ( 
                         <Grid className="calc-box" container sx={{borderRadius:'5px'}}>
                             <Grid item>
                                 <RemoveIcon sx={{fontSize:'30px' , cursor:'pointer'}} 
@@ -504,42 +485,45 @@ const CartItem = ({ itemdata, getcartdata }) => {
                               />
                             </Grid>
                         </Grid>
-                        <Grid className="cart-box" container 
+                        ):(
+                            <>
+                            </>
+                        )}
+                        {showfunc ? (
+                          <Grid className="cart-box" container 
                           onClick={() => {
-                              addtocartPop()
+                            removeFromCart()
                           }}>
                             <Grid item>
                                 <ShoppingBagOutlinedIcon />
                             </Grid>
                             <Grid item>
-                                <Typography  sx={{fontWeight:'bold'}}>Add to Cart</Typography>
+                                <Typography  sx={{fontWeight:'bold'}}>Remove from Cart</Typography>
                             </Grid>
-                        </Grid>
+                            </Grid>
+                        ):(
+                              <Grid className="cart-box" container 
+                              onClick={() => {
+                                  addtocartPop()
+                              }}>
+                                <Grid item>
+                                    <ShoppingBagOutlinedIcon />
+                                </Grid>
+                                <Grid item>
+                                    <Typography  sx={{fontWeight:'bold'}}>Add to Cart</Typography>
+                                </Grid>
+                            </Grid>
+                        )}
                         <Grid container direction='row' justifyContent='space-between'>
                             <Grid className="pop-box" item md={5.5}>
                                 <FavoriteBorderIcon />
-                                <Typography>Wishlist</Typography>
+                                <Typography>Favourite</Typography>
                             </Grid> 
                             <Grid className="pop-box" item md={5.5}>
                                 < ReplyOutlinedIcon />
                                 <Typography>Share</Typography>
                             </Grid>
                         </Grid>
-                        {/* <Grid container gap={3} sx={{padding:'20px 0'}} direction='row' >
-                            <Grid item sx={{display:'flex' , direction:'row'}}>
-                                <SellOutlinedIcon />
-                                <Typography>Tags :</Typography>
-                            </Grid>
-                            <Grid item className="tag-box">
-                                <Typography>Fresh</Typography>
-                            </Grid>
-                            <Grid item className="tag-box">
-                                <Typography>Fresh</Typography>
-                            </Grid>
-                            <Grid item className="tag-box">
-                                <Typography>Fresh</Typography>
-                            </Grid>
-                        </Grid> */}
                         <Grid pt={2}>
                             <Typography sx={{fontWeight:'600'}}>Product Details:</Typography>
                         </Grid>
@@ -548,6 +532,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                         </Grid>
                     </Grid>
                 </Grid>
+                </>
             )}
              {showreview ? (
               <>
@@ -699,25 +684,6 @@ const CartItem = ({ itemdata, getcartdata }) => {
             </Grid>
             <Divider />
 
-            {/* <div className='s2'>
-
-                    <p style={{fontSize:'14px' , wordBreak:'break-all'}}>{itemdata.data.ProductName}</p>
-                <div className='qty'>
-                    <button className='qtybtn'
-                        onClick={decreaseqty}
-                    >-</button>
-                    <p>{itemdata.quantity}</p>
-                    <button className='qtybtn'
-                        onClick={increaseqty}
-                    >+</button>
-                </div>
-            </div>
-            <div className='s3'
-            >
-                    <p className='amount' style={{fontSize:'15px' , fontWeight:'bold'}}>
-                        <span>$</span>{(itemdata?.data?.SellingCost * itemdata.quantity).toFixed(2)}
-                    </p>
-            </div> */}
         </div>
     </>
     )
