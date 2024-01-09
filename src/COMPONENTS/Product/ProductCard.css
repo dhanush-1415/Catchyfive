@@ -15,7 +15,28 @@
 }
 
 
+.imgslider{
+  max-height: 430px;
+  overflow: auto;
+}
 
+.imgslider::-webkit-scrollbar {
+  width: 5px;
+}
+
+.imgslider::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+.imgslider::-webkit-scrollbar-thumb {
+  background: #888; 
+}
+
+/* Handle on hover */
+.imgslider::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
 
 .wishlistbtn, .wishlistbtn1{
     width: 20px; /* Adjusted width */

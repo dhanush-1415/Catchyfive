@@ -36,21 +36,41 @@ import { toast, ToastContainer } from 'react-toastify'
 import CloseIcon from '@mui/icons-material/Close';
 import Divider from '@mui/material/Divider';
 import { useEffect } from 'react'
+import DeleteIcon from '@mui/icons-material/Delete';
+import Zoom from '@mui/material/Zoom';
+import logo from '../../ASSETS/loaderGif.gif'
 
 
 const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  borderRadius:'8px',
+  p: 4,
+  zIndex:9999,
+  minHeight: '85vh !important',
+};
+
+  
+
+  const style2 = {
     position: 'absolute',
-    top: '50%',
-    left: '50%',
+    top: '8%',
+    left: '7%',
     transform: 'translate(-50%, -50%)',
     bgcolor: 'background.paper',
     boxShadow: 24,
     borderRadius:'8px',
     p: 4,
-    zIndex:9999,
+    minHeight: '85vh !important',
+    display:'flex',
+    justifyContent:'center'
   };
-  
-  
+
+
   const CustomPrevArrow = (props) => (
     <div className="custom-arrow custom-prev" onClick={props.onClick}>
       <ArrowBackIosNewIcon />
@@ -101,8 +121,16 @@ const CartItem = ({ itemdata, getcartdata }) => {
         nextArrow: <CustomNextArrow />,
       };
   
-    const getProductById = async (code) => {
-      fetch(process.env.REACT_APP_BACKEND_URL + '/Product/GetAllWithImageV2?OrganizationId=3&ProductCode='+code, {
+      const [imgPath , setImgPath ] = useState(noimage);
+
+      const imageclick = (path) => {
+        setImgPath(path);
+      }
+      
+    
+      const getProductById = async (code) => {
+    
+        fetch(process.env.REACT_APP_BACKEND_URL + '/Product/Getbycode?OrganizationId=3&ProductCode='+code, {
           method: 'GET',
           headers: {
               'Content-Type': 'application/json',
@@ -111,19 +139,21 @@ const CartItem = ({ itemdata, getcartdata }) => {
           .then(response => response.json())
           .then(data => {
               if (data.Code == 200) {
-                  setProductdata(data.Result[0])
-                  // let myimgset = []
-                  // myimgset.push({ id: 1, image: data.Result[0].ProductImagePath })
-                  // setimageset(myimgset)
-                  // setproductdata(data.Result[0])
-                  // setactiveimg(myimgset[0])
-                  // setProductName( data?.Result?.[0]?.Name || "" )
-              }
-          })
-          .catch((error) => {
-              console.error('Error:', error);
-          });
-    }
+                setProductdata(data.Data[0]);          
+                if (data.Data[0].EcommerceGalleryImages && data.Data[0].EcommerceGalleryImages.length) {
+                  imageclick(data.Data[0].EcommerceGalleryImages[0].ImageFilePath);
+                } else {
+                  if(data.Data[0].ProductImagePath !== ""){
+                    setImgPath(data.Data[0].ProductImagePath);
+                  }
+                }
+    
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+      }
 
     const [PopProducts, setproducts] = useState([]);
 
@@ -148,19 +178,38 @@ const CartItem = ({ itemdata, getcartdata }) => {
     //   };
 
 
-      const handleOpen = (code) => {
+    const [isinwhishlist, setisinwhishlist] = useState(false);
+
+    const handleOpen = (code) => {
         // Fetch product details using the product code
         getProductById(code);
     
         // Fetch the current cart data from local storage
         const cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
-    
-        // Check if the product is already in the cart
+        
+
+      let user = localStorage.getItem('token');
+      user = JSON.parse(user);
+
+      if (user) {
+        fetch(process.env.REACT_APP_BACKEND_URL + `/B2CCustomerWishList/GetByCustomer?OrganizationId=3&CustomerId=${user[0].B2CCustomerId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.Code === 200) {
+              const isProductInWishlist = data.Data.some(item => item.ProductCode === code);
+              setisinwhishlist(isProductInWishlist);
+            }
+          })
+          .catch(err => {
+            console.error(err);
+          });
+      }
+
+
         const productInCart = cartArray.some((userCart) => {
             return userCart.CartItems.some((item) => item.data.ProductCode === code);
         });
     
-        // If the product is in the cart, set showfunc to true and update popCount
         if (productInCart) {
             const userData = JSON.parse(localStorage.getItem('token'));
             const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
@@ -232,9 +281,48 @@ const CartItem = ({ itemdata, getcartdata }) => {
     };
 
     
+    const rmcartPop = () => {
 
+      setShowfunc(true)
+    
+      const userData = JSON.parse(localStorage.getItem('token'));
+      const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
+    
+      let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+    
+      if (userId) {
+          const userCart = cartArray.find((userCart) => userCart.UserId === userId);
+    
+          if (userCart) {
+              const itemInCart = userCart.CartItems.find(item => item.data.ProductCode === productData.ProductCode);
+    
+              if (itemInCart) {
+                  itemInCart.quantity += count;
+              } else {
+                  userCart.CartItems.push({ data: productData, quantity: popCount });
+              }
+          } else {
+              // User has no cart, create a new entry for the user
+              cartArray.push({ UserId: userId, CartItems: [{ data: productData, quantity: popCount }] });
+          }
+    
+          localStorage.setItem('cartArray', JSON.stringify(cartArray));
+    
+          toast.success('Product decreased from cart', {
+              position: "bottom-right",
+              autoClose: 1000,
+          });
+    
+          getcartitems(); // Assuming you have a function to update cart quantity in UI
+      } else {
+          // Handle the case where the user is not logged in
+          // You may want to show a message or redirect the user to the login page
+          console.log('User not logged in');
+      }
+    };
 
     const removeFromCart = () => {
+      setPopCount(1)
         setShowfunc(false)
         const userData = JSON.parse(localStorage.getItem('token'));
         const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
@@ -399,7 +487,104 @@ const CartItem = ({ itemdata, getcartdata }) => {
             getcartitems();
         }
     };
+
+
+    const getwhishlist = () => {
+        let user = localStorage.getItem('token')
+        user = JSON.parse(user)
+        if (user) {
+          fetch(process.env.REACT_APP_BACKEND_URL + `/B2CCustomerWishList/GetByCustomer?OrganizationId=3&CustomerId=${user[0].B2CCustomerId}`)
+            .then(res => res.json())
+            .then(data => {
+              // console.log(data)
+              if (data.Code == 200) {
+                data.Data.forEach((item) => {
+                  if (item.ProductCode === productData.productCode) {
+                    setisinwhishlist(true)
+                  }
+                })
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      }
     
+    const addtowhishlist = () => {
+        let user = localStorage.getItem('token');
+        user = JSON.parse(user);
+      
+        if (user) {
+          fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerWishList/Create', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              "OrgId": "3",
+              "CustomerId": user[0].B2CCustomerId,
+              "ProductCode": productData.ProductCode,
+              "ProductName": productData.ProductName,
+              "IsActive": true,
+              "CreatedBy": user[0].B2CCustomerId,
+              "CreatedOn": `${new Date()}`,
+            }),
+          })
+            .then(res => res.json())
+            .then(data => {
+              console.log(data);
+              if (data.Code === 200) {
+                setisinwhishlist(true);
+                getwhishlist();
+                toast.success('Product added to favourites', {
+                  position: "bottom-right",
+                  autoClose: 1000,
+                });
+              }
+            })
+            .catch(err => {
+              console.log(err);
+              toast.error('Product could not be able to added to cart', {
+                position: "bottom-right",
+                autoClose: 1000,
+            });
+            });
+        }
+        else {
+            toast.error('Please login to continue', {
+                position: "bottom-right",
+                autoClose: 1000,
+            });
+        }
+      }
+
+
+
+      const removewhishlist = () => {
+        let user = localStorage.getItem('token')
+        user = JSON.parse(user)
+        if (user) {
+          fetch(process.env.REACT_APP_BACKEND_URL + `/B2CCustomerWishList/Remove?OrganizationId=3&CustomerId=${user[0].B2CCustomerId}&ProductCode=${productData.productCode}&UserName=admin`)
+    
+            .then(res => res.json())
+            .then(data => {
+              // console.log(data)
+              if (data.Code == 200) {
+                setisinwhishlist(false);
+                getwhishlist();
+                toast.success('Product removed from favourites', {
+                  position: "bottom-right",
+                  autoClose: 1000,
+                });
+              }
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+       // localStorage.removeItem('wishlist_' + productcode);
+      }
     
 
     const [cartPopupShow, setCartPopupShow] = useRecoilState(cartPopupState);
@@ -413,43 +598,57 @@ const CartItem = ({ itemdata, getcartdata }) => {
             aria-describedby="modal-modal-description"
             sx={{zIndex:'9999'}}
         >
-            <Box sx={style} className='pop-responsive'>
 
                 {productData ? (
                 <>
+              <Box sx={style} className='pop-responsive'>
+              <ToastContainer />
+              <CloseIcon sx={{ position:'relative' , float:'right' , cursor:'pointer'}} onClick={handleClose} />
             {productData && (
                 <>
-                <CloseIcon sx={{ position:'relative' , float:'right' , cursor:'pointer'}} onClick={handleClose} />
                 <Grid container width='98%' >
-                    <ToastContainer />
                     <Grid item sm={12} md={8} >
                       <Grid container direction='row'>
                         <Grid item md={2.5} sx={{display:'flex' , justifyContent:'center' , alignItems:'flex-start'}}>
-                            <Grid container direction='column' justifyContent='center'  alignItems='center'>
-                              <Grid item p={2} m={1} sx={{border:'1px solid #02b290'}}>
-                                  <img src={productData.ProductImagePath} alt='' width='90px' height='110px' />
-                              </Grid>
-                              {/* <Grid item p={2} m={1} sx={{border:'1px solid #02b290'}}>
-                                  <img src={productData.ProductImagePath} alt='' width='90px' height='110px' />
-                              </Grid>
-                              <Grid item p={2} m={1} sx={{border:'1px solid #02b290'}}>
-                                  <img src={productData.ProductImagePath} alt='' width='90px' height='110px' />
-                              </Grid> */}
-                     
+                          {productData.EcommerceGalleryImages && productData.EcommerceGalleryImages.length ? (
+                            <>
+                       <Grid container direction='column'>
+                       <div className='imgslider'>
+                          {productData.EcommerceGalleryImages.map((image, index) => (
+                            <Grid
+                            key={index}
+                            item
+                            p={2}
+                            m={1}
+                            sx={{ border: '1px solid #02b290' , display:'flex' , justifyContent:'center' }}
+                            onClick={() => imageclick(image.ImageFilePath)}
+                          >
+                                <img src={image.ImageFilePath || noimage} alt='' width='90px' height='100px' />
                             </Grid>
+                          ))}
+                          </div>
+                          </Grid>
+                          </>
+                          ):(
+                            <Grid className="imgslider" container direction='column' justifyContent='center'  alignItems='center'>
+                          <Grid item p={2} m={1} sx={{border:'1px solid #02b290'}}>
+                            <img src={productData.ProductImagePath || noimage} alt='' width='90px' height='100px' />
+                          </Grid>
+                          </Grid>
+                          )}
                         </Grid>
                         <Grid item md={9} m={1}>
-                          <Grid container justifyContent="center" alignItems="center" sx={{ border: '1px solid #02b290' , padding:'100px 0' }}>
-                            <img src={productData.ProductImagePath} alt="" width="230px" />
+                          <Grid container justifyContent="center" alignItems="center" sx={{ border: '1px solid #02b290' , padding:'40px 0' }}>
+                            <img src={imgPath} alt="" width="350px" />
                           </Grid>
                         </Grid>
                       </Grid>
                     </Grid>
                     <Grid item sm={12} md={4}>
-                        <Typography sx={{fontWeight:'500' , fontSize:'18px' , wordBreak:'break-all'}}>{productData.Name}</Typography>
+                        <Typography sx={{fontWeight:'bolder' , fontSize:'18px' , wordBreak:'break-all'}}>{productData.ProductName}</Typography>
                         {/* <Typography>1 each</Typography> */}
                         <Typography sx={{fontWeight:'bolder', fontSize:'20px'}} >S$ {productData.SellingCost}</Typography>
-                        <Typography sx={{color:'#F98F60' , padding:'10px 0'}}>only items left</Typography>
+                        <Typography sx={{color:'#F98F60' , padding:'10px 0'}}>only few items left</Typography>
                         {showfunc ? ( 
                         <Grid className="calc-box" container sx={{borderRadius:'5px'}}>
                             <Grid item>
@@ -457,6 +656,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                                    onClick={() => {
                                       if (popCount > 1) {
                                         setPopCount(popCount - 1)
+                                        rmcartPop()
                                       }
                                   }}
                                 />
@@ -470,6 +670,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                                    if (productData?.EcommerceDetail && productData.EcommerceDetail[0].StockAvailability) {
                                        if (popCount < productData.EcommerceDetail[0].QtyOnHand) {
                                         setPopCount(popCount + 1)
+                                        addtocartPop();
                                        }
                                        else {
                                            toast.error('You have reached maximum quantity', {
@@ -480,6 +681,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                                    }
                                    else {
                                     setPopCount(popCount + 1)
+                                    addtocartPop();
                                    }
                                }}
                               />
@@ -498,7 +700,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                                 <ShoppingBagOutlinedIcon />
                             </Grid>
                             <Grid item>
-                                <Typography  sx={{fontWeight:'bold'}}>Remove from Cart</Typography>
+                                <Typography  sx={{fontWeight:'bold' , marginTop:'5px'}}>Remove from Cart</Typography>
                             </Grid>
                             </Grid>
                         ):(
@@ -510,19 +712,28 @@ const CartItem = ({ itemdata, getcartdata }) => {
                                     <ShoppingBagOutlinedIcon />
                                 </Grid>
                                 <Grid item>
-                                    <Typography  sx={{fontWeight:'bold'}}>Add to Cart</Typography>
+                                    <Typography  sx={{fontWeight:'bold', marginTop:'5px'}}>Add to Cart</Typography>
                                 </Grid>
                             </Grid>
                         )}
                         <Grid container direction='row' justifyContent='space-between'>
-                            <Grid className="pop-box" item md={5.5}>
-                                <FavoriteBorderIcon />
-                                <Typography>Favourite</Typography>
+                        {
+                             isinwhishlist ? (
+                              <Grid className="pop-box" item md={5.5}>
+                              < FavoriteIcon sx={{float:'right'}} onClick={removewhishlist} />
+                              <Typography> Favourite</Typography>
+                              </Grid> 
+                             ):(
+                              <Grid className="pop-box" item md={5.5}>
+                              <FavoriteBorderIcon sx={{float:'right'}} onClick={addtowhishlist} />
+                              <Typography> Favourite</Typography>
                             </Grid> 
-                            <Grid className="pop-box" item md={5.5}>
+                             )
+                          }
+                            {/* <Grid className="pop-box" item md={5.5}>
                                 < ReplyOutlinedIcon />
                                 <Typography>Share</Typography>
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                         <Grid pt={2}>
                             <Typography sx={{fontWeight:'600'}}>Product Details:</Typography>
@@ -605,7 +816,7 @@ const CartItem = ({ itemdata, getcartdata }) => {
                                                     <Grid container sx={{ display:'flex' , flexDirection:'column' , justifyContent:'space-between' ,  minHeight:'150px'}} >
                                                         <Grid item>
                                                             <Typography sx={{fontWeight:'bold' , lineHeight:'1.5rem' ,fontSize:'1rem'}}>S$ {item.PcsPrice} - S$ {item.SellingCost}</Typography>
-                                                            <Typography sx={{padding:' 10px 0px' , color:'#595959' , fontSize:'14px' , wordBreak:'break-all'}}>{item.Name}</Typography>
+                                                            <Typography sx={{padding:' 10px 0px' , color:'#595959' , fontSize:'14px' , wordBreak:'break-all'}}>{item.ProductName}</Typography>
                                                         </Grid>
                                                         <Grid item>
                                                             <Typography>1 each</Typography>
@@ -626,41 +837,33 @@ const CartItem = ({ itemdata, getcartdata }) => {
                       <></>
                     )}
                 </Grid> 
+                </Box>
                 </>
                 ):(
                   <>
-                    <LinearProgress />
-                  </>
+                <Zoom in={open}>
+                  <Box sx={style2} className='pop-responsive'>
+                    <div style={{display:'flex' , justifyContent:'center' , alignItems:'center'}}>
+                      <img style={{maxHeight:'300px'}} src={logo} alt="Loading..." />
+                    </div>
+                  </Box>
+                </Zoom>                  </>
                 )}
-
-            </Box>
         </Modal>
 
         <div className='cartitem' style={{borderBottom:'0.2px solid rgb(128, 128, 128)'}}>
             <div className='s1'
-                onMouseEnter={() => setshowdelete(true)}
-                onMouseLeave={() => setshowdelete(false)}
-                style={{borderRadius:'6px'}}
+               onClick={(e) => {handleOpen(itemdata.data.ProductCode)}}
+                style={{borderRadius:'6px', cursor:'pointer'}}
             >
                 <img src={itemdata.data.ProductImageFileName != 'NoImage.jpg' && itemdata.data.ProductImageFileName !== "" ? itemdata.data.ProductImagePath: noimage} alt='no img' />
-                {
-                    showdelete && <div className='removeitem'>
-                        <button
-                            onClick={deleteitem}
-                        >
-                            <CloseIcon  sx={{fontSize:'15px'}}/>
-                            {/* <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg> */}
-                        </button>
-                    </div>
-                }
+
             </div>
             <Grid container direction='column' sx={{padding:'0px 10px'}}>
                 <Grid item>
                     <Grid container direction='row' justifyContent='space-between'>
                         <Grid item md={9}>
-                            <Typography className='ProdName' onClick={(e) => {handleOpen(itemdata.data.ProductCode)}}>{itemdata.data.ProductName}</Typography>
+                            <Typography className='ProdName' sx={{cursor:'pointer'}} onClick={(e) => {handleOpen(itemdata.data.ProductCode)}}>{itemdata.data.ProductName}</Typography>
                         </Grid>
                         <Grid item md={3} sx={{display:'flex' , justifyContent:'center'}}>
                             <Typography sx={{fontSize:'14px' , fontWeight:'bold'}}>S$ {(itemdata?.data?.SellingCost * itemdata.quantity).toFixed(2)}</Typography>
@@ -676,8 +879,8 @@ const CartItem = ({ itemdata, getcartdata }) => {
                                 <AddIcon sx={{border:'1px solid grey' , borderRadius:'50%' , color:'#767676',fontSize:'22px'}}  onClick={increaseqty} />
                             </Grid>
                         </Grid>
-                        <Grid item>
-
+                        <Grid item sx={{display:'flex', alignItems:'center'}}>
+                            <DeleteIcon onClick={deleteitem} sx={{color:'red'}}/>
                         </Grid>
                     </Grid>
                 </Grid>

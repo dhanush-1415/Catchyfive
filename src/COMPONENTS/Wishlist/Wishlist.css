@@ -7,6 +7,11 @@
     border-radius: 10px;
 }
 
+.imgslider{
+    max-height: 430px;
+    overflow: auto;
+  }
+  
 .wishlistitem .s1{
     width: 30%;
     aspect-ratio: 1/1;
@@ -112,6 +117,11 @@
 
 .wishlistitem .removeitem button svg{
     color: black;
+}
+.outcont{
+    width: 65%;
+    height: 100%;
+    position: absolute;
 }
 
 /* make it responsive */

@@ -97,15 +97,12 @@ const Sucess = () => {
       <div className="success-container">
         <h1 className="success-heading">Thank You for Your Order!</h1>
         <p className="success-message">Your order has been successfully placed. </p>
-        <div className="order-summary">
-          {/* Display Order details here */}
+        {/* <div className="order-summary">
         </div>
         <div className="shipping-info">
-          {/* Display shipping details here */}
         </div>
         <div className="payment-info">
-          {/* Display payment details here */}
-        </div>
+        </div> */}
         <p className="order-number">Your Order Number: {ordersuccessorderid}</p>
       
 

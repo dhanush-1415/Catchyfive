@@ -1,4 +1,4 @@
-import React , {useEffect} from 'react'
+import React , {useEffect, useState} from 'react'
 import { toast } from 'react-toastify'
 import { useRecoilState } from 'recoil'
 import AddNewAddress from '../../COMPONENTS/Address/AddNewAddress'
@@ -31,7 +31,8 @@ const Checkout = () => {
   const [shippingcost, setshippingcost] = React.useState(0)
   const [tax, settax] = React.useState(0)
   const [boxLoad , setboxload ] = React.useState(false);
-
+  const [quantitySum, setQuantitySum] = React.useState(0);
+  const [shiptax , setShiptax] = useState(0);
   // const getcartdata = async () => {
   //   let cart = JSON.parse(localStorage.getItem('cart'))
   //   // console.log(cart)
@@ -56,8 +57,6 @@ const Checkout = () => {
   //   }
   // }
 
-
-
   const getcartdata = async () => {
     const userData = JSON.parse(localStorage.getItem('token'));
     const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
@@ -71,18 +70,35 @@ const Checkout = () => {
           setcartdata(userCart.CartItems);
 
             let total = 0;
-            userCart.CartItems.forEach((item) => {
-                total += item.data.SellingCost * item.quantity;
-            });
-            setsubtotal(total);
+            let sumOfQuantities = 0;
+            let taxamt = 0;
 
+            userCart.CartItems.forEach((item) => {
+                let taxp = item.data.TaxPerc / 100;
+                taxamt =  taxp * item.data.SellingCost * item.quantity;
+                total += item.data.SellingCost * item.quantity;
+                sumOfQuantities += item.quantity;
+            });
+
+            setsubtotal(total);
+            setQuantitySum(sumOfQuantities);
+            // settax(taxamt.toFixed(2));
+            settax(0);
+            setShiptax()
             if (total >= 80) {
-                setshippingcost(0);
-            } else if (total >= 50 && total <= 79) {
-                setshippingcost(3);
-            } else if (total < 50) {
+              setshippingcost(0);
+              // setShiptax((0 + taxamt));
+              setShiptax((0));
+          } else if (total >= 50 && total <= 79) {
+              setshippingcost(3);
+              // setShiptax((3 + taxamt));
+              setShiptax((3 ));
+          } else if (total < 50) {
               setshippingcost(5);
-            }
+              // setShiptax((5 + taxamt));
+              setShiptax((5));
+          }
+          
         } else {
             // User has no items in the cart
             setcartdata([]);
@@ -144,7 +160,8 @@ const Checkout = () => {
     // console.log(userdata)
     let mainaddress = {
       AddressLine1: userdata.AddressLine1,
-      AddressLine2: userdata.AddressLine2,
+      FloorNo: userdata.FloorNo,
+      UnitNo: userdata.UnitNo,
       AddressLine3: userdata.AddressLine3,
       EmailId: userdata.EmailId,
     }
@@ -155,7 +172,7 @@ const Checkout = () => {
         console.log(data)
         if (data.Data != null) {
           otheraddress = data.Data
-          if (mainaddress.AddressLine1 == '' && mainaddress.AddressLine2 == '' && mainaddress.AddressLine3 == '') {
+          if (mainaddress.AddressLine1 == '' && mainaddress.FloorNo == '' && mainaddress.UnitNo == '' && mainaddress.AddressLine3 == '') {
             let alladdress = [
               ...otheraddress
             ]
@@ -178,7 +195,7 @@ const Checkout = () => {
           let alladdress = [
             mainaddress
           ]
-          if (mainaddress.AddressLine1 == '' && mainaddress.AddressLine2 == '' && mainaddress.AddressLine3 == '') {
+          if (mainaddress.AddressLine1 == '' && mainaddress.FloorNo == '' && mainaddress.UnitNo == '' && mainaddress.AddressLine3 == '') {
             setsavedaddresses([])
             console.log('no address')
           }
@@ -250,7 +267,7 @@ const Checkout = () => {
 
     setboxload(true);
     // console.log('place order', cartdata)
-    if (selectedaddress.AddressLine1 == '' && selectedaddress.AddressLine2 == '' && selectedaddress.AddressLine3 == '') {
+    if (selectedaddress.AddressLine1 == '' && selectedaddress.FloorNo == '' && selectedaddress.UnitNo == '' && selectedaddress.AddressLine3 == '') {
       toast.error('Please Select Address')
       return
     }
@@ -268,7 +285,7 @@ const Checkout = () => {
       "OrderDate": formattedDate,
       "CustomerId": user.B2CCustomerId,
       "CustomerName": user.B2CCustomerName,
-      "CustomerAddress": selectedaddress.AddressLine1 + ' ' + selectedaddress.AddressLine2 + ' ' + selectedaddress.AddressLine3,
+      "CustomerAddress": selectedaddress.AddressLine1 + ' ' + selectedaddress.FloorNo + ' ' + selectedaddress.UnitNo + ' ' + selectedaddress.AddressLine3,
       "PostalCode": selectedaddress.PostalCode,
       "TaxCode": 1,
       "TaxType": "e",
@@ -291,7 +308,7 @@ const Checkout = () => {
       "ChangedOn": formattedDate,
       "Status": 0,
       "CustomerShipToId": user.B2CCustomerId,
-      "CustomerShipToAddress": selectedaddress.AddressLine1 + ' ' + selectedaddress.AddressLine2 + ' ' + selectedaddress.AddressLine3,
+      "CustomerShipToAddress": selectedaddress.AddressLine1 + ' ' + selectedaddress.FloorNo + ' ' + selectedaddress.UnitNo + ' ' + selectedaddress.AddressLine3,
       "Latitude": 0,
       "Longitude": 0,
       "Signatureimage": "string",
@@ -362,7 +379,7 @@ const Checkout = () => {
       })
   }
   const savepreorderobjtoLS = async () => {
-    if (selectedaddress.AddressLine1 == '' && selectedaddress.AddressLine2 == '' && selectedaddress.AddressLine3 == '') {
+    if (selectedaddress.AddressLine1 == '' && selectedaddress.FloorNo == '' && selectedaddress.UnitNo == '' && selectedaddress.AddressLine3 == '') {
       toast.error('Please Select Address')
       return false
     }
@@ -381,7 +398,7 @@ const Checkout = () => {
         "OrderDate": formattedDate,
         "CustomerId": user.B2CCustomerId,
         "CustomerName": user.B2CCustomerName,
-        "CustomerAddress": selectedaddress.AddressLine1 + ' ' + selectedaddress.AddressLine2 + ' ' + selectedaddress.AddressLine3,
+        "CustomerAddress": selectedaddress.AddressLine1 + ' ' + selectedaddress.FloorNo + ' ' + selectedaddress.UnitNo + ' ' + selectedaddress.AddressLine3,
         "PostalCode": selectedaddress.PostalCode,
         "TaxCode": 1,
         "TaxType": "e",
@@ -404,7 +421,7 @@ const Checkout = () => {
         "ChangedOn": formattedDate,
         "Status": 0,
         "CustomerShipToId": user.B2CCustomerId,
-        "CustomerShipToAddress": selectedaddress.AddressLine1 + ' ' + selectedaddress.AddressLine2 + ' ' + selectedaddress.AddressLine3,
+        "CustomerShipToAddress": selectedaddress.AddressLine1 + ' ' + selectedaddress.FloorNo + ' ' + selectedaddress.UnitNo + ' ' + selectedaddress.AddressLine3,
         "Latitude": 0,
         "Longitude": 0,
         "Signatureimage": "string",
@@ -620,7 +637,8 @@ const Checkout = () => {
                       return (
                         <div className={
                           selectedaddress.AddressLine1 == item.AddressLine1 &&
-                            selectedaddress.AddressLine2 == item.AddressLine2 &&
+                            selectedaddress.FloorNo == item.FloorNo &&
+                            selectedaddress.UnitNo == item.UnitNo &&
                             selectedaddress.AddressLine3 == item.AddressLine3 &&
                             selectedaddress.EmailId == item.EmailId ? 'addresscontainer active' : 'addresscontainer'
                         } key={index}
@@ -628,10 +646,13 @@ const Checkout = () => {
                         >
                           <p>
                             {
-                              item.AddressLine1 && <span>{item.AddressLine1} , </span>
+                              item.AddressLine1 && <span>{item.AddressLine1} ,</span>
                             }
                             {
-                              item.AddressLine2 && <span>{item.AddressLine2} , </span>
+                              item.FloorNo && <span>{item.FloorNo} ,</span>
+                            }
+                             {
+                              item.UnitNo && <span>{item.UnitNo} ,</span>
                             }
                             {
                               item.AddressLine3 && <span>{item.AddressLine3}</span>
@@ -768,8 +789,8 @@ const Checkout = () => {
           <table>
             <thead>
               <tr>
-                <th>Qty</th>
                 <th>Product</th>
+                <th>Qty</th>
                 <th className='price'>Amount</th>
               </tr>
             </thead>
@@ -785,11 +806,7 @@ const Checkout = () => {
                         setCartPopupShow(true)
                       }}
                     >
-                      <td className='quantity'>
-                        <span>
-                          {item.quantity}
-                        </span>
-                      </td>
+           
                       <td>
                         <div className='imgandname'>
                           {
@@ -802,7 +819,11 @@ const Checkout = () => {
                           <p>{item.data.ProductName}</p>
                         </div>
                       </td>
-
+                      <td className='quantity'>
+                        <span>
+                          {item.quantity}
+                        </span>
+                      </td>
                       <td className='price'>
                         S${(item.data.SellingCost * item.quantity).toFixed(2)}
                       </td>
@@ -815,20 +836,29 @@ const Checkout = () => {
 
           <div className='subtotal'>
             <h1>Qty Total</h1>
+            <h2>{quantitySum} items</h2>
+          </div>
+          <div className='subtotal'>
+            <h1>Qty Amount</h1>
             <h2>S${subtotal.toFixed(2)}</h2>
           </div>
           <div className='subtotal'>
-            <h1>Shipping charges</h1>
-            <h2>S${shippingcost.toFixed(2)}</h2>
+            <h1>Shipping charges </h1>
+            <h2>S${shiptax.toFixed(2)}</h2>
+          </div>
+          <div className='subtotal'>
+            <h1>Tax </h1>
+            <h2>S$0.00</h2>
           </div>
           <div className='subtotal'>
             <h1>Pay Total</h1>
-            <h2>S${(subtotal + shippingcost).toFixed(2)}</h2>
+            <h2>S${(subtotal + shiptax).toFixed(2)}</h2>
           </div>
           {
               paymentmethod !== '' &&
               selectedaddress.AddressLine1 !== '' && 
-              selectedaddress.AddressLine2 !== '' && 
+              selectedaddress.FloorNo !== '' && 
+              selectedaddress.UnitNo !== '' && 
               selectedaddress.AddressLine3 !== ''&& 
               deliverydate !== ''
                 ?
@@ -844,7 +874,7 @@ const Checkout = () => {
                   if (user.B2CCustomerId == null) {
                     toast.error('Please Login First')
                   }
-                  else if (selectedaddress.AddressLine1 == undefined && selectedaddress.AddressLine2 == undefined && selectedaddress.AddressLine3 == undefined) {
+                  else if (selectedaddress.AddressLine1 == undefined && selectedaddress.FloorNo == undefined && selectedaddress.UnitNo == undefined && selectedaddress.AddressLine3 == undefined) {
                     toast.error('Please select a delivery address')
                   }
 

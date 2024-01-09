@@ -10,7 +10,8 @@ import { loginState } from '../../Providers/LoginProvider';
 import { Eye, EyeSlash } from 'react-bootstrap-icons';
 import { Grid, Paper, Typography, Button } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 
 const AuthPopup = () => {
     const [authPopupShow, setAuthPopupShow] = useRecoilState(authPopupState);
@@ -39,6 +40,10 @@ const AuthPopup = () => {
     const [ buttonName , setButtonName ] = useState("Verify");
     const [sendbtnName , setSendBtnName ] = useState("Send Otp");
     const [boxLoad , setboxload ] = React.useState(false);
+
+
+
+    
 
     const handleChange = (nextChecked) => {
         setChecked(nextChecked);
@@ -180,8 +185,8 @@ const AuthPopup = () => {
 
                               setTimeout(() => {
                                   setAuthPopupShow(false)
-                                  // window.location.reload()
                               }, 1000);
+                              window.location.reload();
                           
             } else {
               toast.error('Login Failed');
@@ -234,6 +239,8 @@ const AuthPopup = () => {
         AddressLine1: "",
         AddressLine2: "",
         AddressLine3: "",
+        FloorNo: "",
+        UnitNo: "",
         MobileNo: "+65",
         CountryId: "IND",
         PostalCode: "",
@@ -248,6 +255,25 @@ const AuthPopup = () => {
             {}
         ]
     })
+
+
+    const [inputValue, setInputValue] = React.useState('');
+
+    const dynamicOptions = top100Films.map((option) => ({
+      label: `${inputValue}${option.domain}`,
+      year: option.year,
+    }));
+
+
+    useEffect(() => {
+      if (inputValue.trim() !== '') {
+        // Update signupdata.EmailId with the new input value
+        setsignupdata((previousData) => ({
+          ...previousData,
+          EmailId: inputValue,
+        }));
+      }
+    }, [inputValue]);
 
     const [forgotData , setForgotData] = useState({
       "OrgId": 3,
@@ -269,7 +295,7 @@ const AuthPopup = () => {
             ...signupdata,
             // AddressLine1: data.results[0].BLK_NO,
             // AddressLine2: data.results[0].BUILDING,
-            AddressLine3: data.results[0].ADDRESS,
+            AddressLine4: data.results[0].ADDRESS,
         })
     }
 
@@ -285,6 +311,7 @@ const AuthPopup = () => {
         let passwordError = '';
         let postalCodeError = '';
         let floorError = '';
+        let unitError = '';
         if (!signupdata.B2CCustomerName) {
           nameError = 'Please enter your name';
         } else if (/^\s*$/.test(signupdata.B2CCustomerName)) {
@@ -320,11 +347,17 @@ const AuthPopup = () => {
         } else if (/^\s*$/.test(signupdata.PostalCode)) {
           postalCodeError = 'Postal code cannot be just spaces';
         }
-        if (!signupdata.AddressLine2) {
+        if (!signupdata.FloorNo) {
           floorError = 'Please enter your floor';
-          console.log(signupdata.AddressLine2);
-        } else if (/^\s*$/.test(signupdata.AddressLine2)) {
+          console.log(signupdata.FloorNo);
+        } else if (/^\s*$/.test(signupdata.FloorNo)) {
           floorError = 'Floor cannot be just spaces';
+        }
+        if (!signupdata.UnitNo) {
+          unitError = 'Please enter your UnitNo';
+          console.log(signupdata.UnitNo);
+        } else if (/^\s*$/.test(signupdata.UnitNo)) {
+          unitError = 'Floor cannot be just spaces';
         }
       
       
@@ -335,6 +368,7 @@ const AuthPopup = () => {
         password: passwordError,
         postalCode: postalCodeError,
         floor: floorError,
+        unit : unitError , 
 
       });
       console.log(signupErrors.floor);
@@ -351,7 +385,7 @@ const AuthPopup = () => {
                     toast.error("Email already exists")
                 }
                 else {
-
+                    console.log(tempdata , "PPPPPPPPPPPPPPPPPPPPPPPPP")
                     fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerRegister/Create',
                         {
                             method: 'POST',
@@ -392,11 +426,8 @@ const AuthPopup = () => {
 
 
     }
-    const handleOTPChange = (event) => {
-        setOTP(event.target.value);
 
-      };
-      const [otpSentMessage, setOtpSentMessage] = useState(false);
+  const [otpSentMessage, setOtpSentMessage] = useState(false);
   const handleSendOTP = async (e) => {
     e.preventDefault();
     const email = signupdata.EmailId.replace(/@/g, "%40");
@@ -407,7 +438,8 @@ const AuthPopup = () => {
       return;
     }
 
-    setSendBtnName(<CircularProgress size='2rem' />);
+    setSendBtnName(<CircularProgress sx={{color:'white'}}  size='2rem' />);
+    setButtonName(<CircularProgress  sx={{color:'white'}} size='2rem' />);
 
     const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/B2CCustomerRegister/GetbyEmail?OrganizationId=3&EmailId=${email}`, {   
       method: 'GET',
@@ -440,27 +472,22 @@ const AuthPopup = () => {
         }
   
         const data = await response.json();
-        console.log('OTP sent successfully:');
-        setButtonName("Verifying...");
+        toast.success('OTP sent successfully');
+        setButtonName("Resend");
         setverify(data.Data);
         setIsOtpSent(true);
         setShowVerifySection(true);
         setOtpSentMessage(true);
-        setTimeDisable()
-        setTimeout(() => {
-          setOtpSentMessage(false);
-          setButtonName("Resend");
-        }, 1000);
-    
-  
       } catch (error) {
         console.error('Error sending OTP:', error);
+        setButtonName("Verify")
       }
     }else{
       toast.error('Your email is registered already please try login', {
         position: "bottom-right",
         autoClose: 1000,
       })
+      setButtonName("Verify")
     }
   };
 
@@ -539,7 +566,8 @@ const AuthPopup = () => {
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     if (otp === verify) {
-      console.log('OTP verified successfully.');
+      toast.success('OTP verified successfully.');
+      setOtpSentMessage(false);
       setButtonName("Verified");
       setSendDisabled(true);
       setIsVerified(true);
@@ -974,7 +1002,7 @@ const AuthPopup = () => {
               Name <span className='mandatory'>*</span>
             </label> */}
               <label htmlFor='name'>Name <span className='mandatory'>*</span></label>
-        <input
+              <input
               type='text'
               name='name'
               id='name'
@@ -991,8 +1019,9 @@ const AuthPopup = () => {
         Email Address <span className='mandatory'>*</span>
     </label> */}
      <label htmlFor='email'>Email Address <span className='mandatory'>*</span></label>
+     
       <div className="email-input-container">
-      <input
+      {/* <input
         type='email'
         name='email'
         id='email'
@@ -1001,7 +1030,38 @@ const AuthPopup = () => {
         onChange={(e) => {
           setsignupdata({ ...signupdata, EmailId: e.target.value });
         }}
-      />
+      /> */}
+
+    <Autocomplete
+      disablePortal
+      id="combo-box-demo"
+      fullWidth
+      disabled={sendDisable}
+      options={dynamicOptions}
+      getOptionLabel={(option) => option.label}
+      getOptionDisabled={(option) => !inputValue.trim()} 
+      // filterOptions={(options, { inputValue }) => {
+      //   if (inputValue.includes('@')) {
+      //     return [{ label: inputValue }];
+      //   } else {
+      //     return options.filter((option) =>
+      //       option.label.toLowerCase().includes(inputValue.toLowerCase())
+      //     );
+      //   }
+      // }}
+      filterOptions={(options, { inputValue }) => {
+        const showOptions = inputValue.endsWith('@');
+      
+        if (showOptions) {
+          return options;
+        } else {
+          return  [{ label: inputValue }];
+        }
+      }}
+      onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
+      renderInput={(params) => <TextField {...params} placeholder="Enter the Email"
+      InputProps={{ ...params.InputProps, disableUnderline: true }} />}
+    />
       {/* {signupErrors.email && <div className='error-msg'>{signupErrors.email}</div>} */}
       <button className='btn send-otp-button' disabled={sendDisable} onClick={handleSendOTP}>
         {buttonName}
@@ -1014,7 +1074,9 @@ const AuthPopup = () => {
       {isOtpSent && !isVerified && showVerifySection &&  (
         <div className='formcont'>
           <label>
-            OTP  <span style={{color:'red'}}>Resend in {count} seconds</span></label>
+            OTP  
+            {/* <span style={{color:'red'}}>Resend in {count} seconds</span> */}
+            </label>
           <div className="email-input-container">
            <input 
             className='email-input'
@@ -1097,6 +1159,7 @@ const AuthPopup = () => {
   {/* <label htmlFor='postalcode'>Postal Code <span className="mandatory">*</span></label> */}
   <label htmlFor='postalcode'>Postal Code<span className='mandatory'>*</span></label>
   <div className="email-input-container">
+    
     <input
     className='email-input'
       type='text'
@@ -1109,6 +1172,7 @@ const AuthPopup = () => {
         setsignupdata({ ...signupdata, PostalCode: e.target.value });
       }}
     />
+        {signupErrors.postalCode&& <span className='error-msg'> - {signupErrors.postalCode}</span>} 
     {/* {signupErrors.postalCode && <div className='error-msg'>{signupErrors.postalCode}</div>} */}
     <button
       className='btn send-otp-button'
@@ -1134,7 +1198,7 @@ const AuthPopup = () => {
     >
       Fetch
     </button>
-    {signupErrors.postalCode&& <span className='error-msg'> - {signupErrors.postalCode}</span>} 
+    {/* {signupErrors.postalCode&& <span className='error-msg'> - {signupErrors.postalCode}</span>}  */}
   </div>
 </div>
 
@@ -1148,22 +1212,36 @@ const AuthPopup = () => {
               }}
             />
           </div>
-          <div className='formcont'>
-          <label htmlFor='addressline2'>Floor and Unit no <span className='mandatory'>*</span></label>
+          <div className='formcont addun'>
+          <div style={{width:'48%'}}>
+          <label htmlFor='addressline2'>Floor no <span className='mandatory'>*</span></label>
             {/* <label htmlFor='addressline2'>Floor and Unit no <span className="mandatory">*</span></label> */}
-            <input type='text' name='addressline2' id='addressline2' placeholder='Enter your Floor no or unit no'
-              value={signupdata.AddressLine2}
+            <input type='text' name='addressline2' id='addressline2' placeholder='Enter your Floor no'
+              value={signupdata.FloorNo}
               onChange={(e) => {
                 e.preventDefault()
-                setsignupdata({ ...signupdata, AddressLine2: e.target.value })
+                setsignupdata({ ...signupdata, FloorNo: e.target.value })
               }}
             />
             {signupErrors.floor && <span className='error-msg'> - {signupErrors.floor}</span>}
           </div>
+          <div style={{width:'49%'}}>
+          <label htmlFor='addressline3'>Unit no <span className='mandatory'>*</span></label>
+            {/* <label htmlFor='addressline2'>Floor and Unit no <span className="mandatory">*</span></label> */}
+            <input type='text' name='addressline3' id='addressline3' placeholder='Enter your unit no'
+              value={signupdata.UnitNo}
+              onChange={(e) => {
+                e.preventDefault()
+                setsignupdata({ ...signupdata, UnitNo: e.target.value })
+              }}
+            />
+            {signupErrors.unit && <span className='error-msg'> - {signupErrors.unit}</span>}
+          </div>
+          </div>
 
           <div className='formcont'>
-            <label htmlFor='addressline3'>Address Line 2 <span className="mandatory">*</span></label>
-            <input type='text' name='addressline3' id='addressline3' placeholder='Enter your Address Line 2'
+            <label htmlFor='addressline4'>Address Line 2 <span className="mandatory">*</span></label>
+            <input type='text' name='addressline4' id='addressline4' placeholder='Enter your Address Line 2'
               value={signupdata.AddressLine3}
               onChange={(e) => {
                 e.preventDefault()
@@ -1178,6 +1256,7 @@ const AuthPopup = () => {
                                     handleSignup()
                                 }}
                                 disabled={createDisable}
+                                style={{background:'#35c1a6'}}
                             >{boxLoad ? <CircularProgress sx={{color:'white'}} /> : "Sign Up"}</button>
                         </form>
                     </div>
@@ -1187,5 +1266,13 @@ const AuthPopup = () => {
         </div>
     )
 }
+
+
+const top100Films = [
+  { domain: 'gmail.com', year: 1994 },
+  { domain: 'yahoo.com', year: 1972 },
+  { domain: 'outlook.com', year: 1974 },
+];
+
 
 export default AuthPopup

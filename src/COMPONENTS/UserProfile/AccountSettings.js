@@ -1,11 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import './AccountSettings.css';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 const AccountSettings = ({ user }) => {
   const [userdata, setuserdata] = useState({});
   const [nameError, setNameError] = useState(null);
   const [phoneError, setPhoneError] = useState(null);
+  const [boxLoad , setboxload ] = React.useState(false);
+
+
+
+  useEffect(() => {
+    if (user && user.length > 0) {
+      setuserdata(user[0]);
+    }
+  }, [user]);
+  
+
+
+  const [postData, setPostdata] = useState({
+    OrgId: 3,
+    B2CCustomerId: "",
+    AddressLine1: "",
+    AddressLine2: "",
+    AddressLine3: "",
+    CountryId: "",
+    PostalCode: "",
+    ChangedBy: "",
+    ChangedOn: "",
+    B2CCustomerName: "",
+    MobileNo: "",
+  });
+  
 
   const validateName = (name) => {
     if (name.length === 0 || name.length > 30) {
@@ -37,6 +65,29 @@ const AccountSettings = ({ user }) => {
   };
   
 
+  
+  useEffect(() => {
+    // Assuming user is an array with at least one element
+    if (user && user.length > 0) {
+      // Update the state with the new values
+      setPostdata({
+        ...postData,
+        B2CCustomerId: user[0].B2CCustomerId,
+        AddressLine1: user[0].AddressLine1,
+        AddressLine2: user[0].AddressLine2,
+        AddressLine3: user[0].AddressLine3,
+        CountryId: user[0].CountryId,
+        PostalCode: user[0].PostalCode,
+        ChangedBy: user[0].CreatedBy,
+        ChangedOn: user[0].CreatedOn,
+        MobileNo: userdata.MobileNo,
+        B2CCustomerName: userdata.B2CCustomerName ,
+
+        // Add more properties as needed
+      });
+    }
+  }, [user , userdata]);
+
   const editprofile = () => {
     const isNameValid = validateName(userdata.B2CCustomerName);
     const isPhoneValid = validatePhone(userdata.MobileNo);
@@ -44,7 +95,7 @@ const AccountSettings = ({ user }) => {
     if (!isNameValid || !isPhoneValid) {
       return;
     }
-
+    setboxload(true);
     userdata.MobileNo = `${userdata.MobileNo}`;
 
     fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerRegister/EditProfile', {
@@ -52,22 +103,24 @@ const AccountSettings = ({ user }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(userdata),
+      body: JSON.stringify(postData),
     })
       .then((res) => res.json())
       .then((data) => {
 
-        if (data.Code === 200) {
-
+        if (data.Status === true) {
+          setboxload(false);
           toast.success('Profile Updated Successfully');
           updateuserdata();
         } else {
+          setboxload(false);
           toast.error('Something Went Wrong');
         }
       })
       .catch((err) => {
         toast.error('Something Went Wrong');
         console.log(err);
+        setboxload(false);
       });
   };
 
@@ -93,9 +146,11 @@ const AccountSettings = ({ user }) => {
       });
   };
 
-  useEffect(() => {
-    setuserdata(user[0]);
-  }, [user]);
+
+
+  
+
+
 
   return (
     <div className='accountsettings'>
@@ -144,7 +199,7 @@ const AccountSettings = ({ user }) => {
       </div>
 
       <button onClick={editprofile} disabled={!!nameError || !!phoneError}>
-        Save Changes
+      {boxLoad ? <CircularProgress size='2rem' sx={{color:'white'}} /> : "Save Changes"}
       </button>
     </div>
   );

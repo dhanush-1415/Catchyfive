@@ -20,7 +20,9 @@ import ProductCard from "../../COMPONENTS/Product/ProductCard";
 import SlidingTopText from "../../COMPONENTS/SlidingTopText/SlidingTopText";
 import ClipLoader from "react-spinners/ClipLoader";
 import logo from "../../ASSETS/loaderGif.gif";
-import { Grid, Paper, Typography, Button } from '@mui/material';
+import { Grid, Paper, Typography, Button , TextField } from '@mui/material';
+import InputAdornment from '@mui/material/InputAdornment';
+import SearchIcon from '@mui/icons-material/Search';
 
 const Home1 = ({ data }) => {
   const { subcategory, Categoryshorturl, Subcatgeoryshorturl  , level3Subcategory} = useParams();
@@ -32,8 +34,13 @@ const Home1 = ({ data }) => {
   const [isgetProguct, setisgetProguct] = useState(false);
   const { categoryid, categoryname } = data || {};
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [sortproductsby , setsortproductsby] = React.useState('Latest')
+  const [sortproductsby , setsortproductsby] = React.useState('Latest');
+  // const [searchInput, setSearchInput] = React.useState(''); // Initialize to an empty string
 
+
+//   const filteredProducts = products && products.length && products.filter((product) =>
+//   product.ProductName.toLowerCase().includes(searchInput.toLowerCase())
+// );
 
   const getProducts = (number) => {
     setLoadingProducts(true);
@@ -278,11 +285,20 @@ let count=0;
     setSelectedCategory(categoryName);
   };
 
+
+  const handleScrollToSearch = () => {
+    const searchInput = document.getElementById('SearchInput'); 
+    if (searchInput) {
+      searchInput.scrollIntoView({ behavior: 'smooth' });
+      searchInput.focus();
+    }
+  };
+
   return (
     <div>
       <SlidingTopText />
 
-      <Navbar />
+      <Navbar  onScrollToSearch={handleScrollToSearch} />
 
       <BannerSlider />
       <HomeCategories />
@@ -295,7 +311,25 @@ let count=0;
         <div className="allproducts">
           <CategoryTopbar categories={categories} />
           <div className="header">
-
+          <div>
+              <span>
+              <TextField
+                label="Search"
+                id="SearchInput"
+                fullWidth
+                sx={{ minWidth: '350px' }}
+                // value={searchInput}
+                // onChange={(e) => setSearchInput(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              </span>
+            </div>
             <div className="sortby">
             <span>Sort by : </span>
               <select

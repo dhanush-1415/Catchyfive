@@ -17,6 +17,8 @@ const AddNewAddress = ({ user, getaddress }) => {
     AddressLine1: '',
     AddressLine2: '',
     AddressLine3: '',
+    FloorNo: '',
+    UnitNo: '',
     IsDefault: true,
   })
 
@@ -24,6 +26,7 @@ const AddNewAddress = ({ user, getaddress }) => {
   const [postalcode, setpostalcode] = useState('');
   const [errorPostalCode, setErrorPostalCode] = useState('');
   const [errorFloorNumber, setErrorFloorNumber] = useState('');
+  const [errorUnitNumber, setErrorUnitNumber] = useState('');
   const [boxLoad , setboxload ] = React.useState(false);
   const [boxLoad2 , setboxload2 ] = React.useState(false);
 
@@ -51,6 +54,8 @@ const AddNewAddress = ({ user, getaddress }) => {
       "CreatedOn": new Date(),
       "ChangedBy": "string",
       "ChangedOn": new Date(),
+      "FloorNo": newaddress.FloorNo,
+      "UnitNo": newaddress.UnitNo
     }
     if (!postalcode) {
       setboxload(false);
@@ -58,9 +63,16 @@ const AddNewAddress = ({ user, getaddress }) => {
       return;
     }
 
-    if (!newaddress.AddressLine2) {
+    if (!newaddress.FloorNo) {
       setboxload(false);
-      setErrorFloorNumber('Floor and Unit number is required.');
+      setErrorFloorNumber('Floor number is required.');
+      return;
+    }
+
+    
+    if (!newaddress.UnitNo) {
+      setboxload(false);
+      setErrorUnitNumber('Unit number is required.');
       return;
     }
 
@@ -249,22 +261,34 @@ console.log('API response:', data);
               }}
             />
           </div>
-          <div className='formcont'>
-            {/* <label htmlFor='addressline2'>Floor and Unit no <span className='mandatory'>*</span></label> */}
-            <label htmlFor='addressline2'>Floor and Unit no {errorFloorNumber && <span className='error-msg'> - {errorFloorNumber}</span>} <span className='mandatory'>*</span></label>
+          <div className='formcont addun'>
+          <div style={{width:'48%' , display:'flex' , flexDirection:'column'}}>
+            <label htmlFor='addressline2'>Floor no {errorFloorNumber && <span className='error-msg'> - {errorFloorNumber}</span>} <span className='mandatory'>*</span></label>
             <input type='text' name='addressline2' id='addressline2'
-              value={newaddress.AddressLine2}
+              value={newaddress.FloorNo}
               onChange={(e) => {
                 e.preventDefault()
-                setnewaddress({ ...newaddress, AddressLine2: e.target.value })
+                setnewaddress({ ...newaddress, FloorNo: e.target.value })
                 setErrorFloorNumber('');
               }}
             />
           </div>
+          <div style={{width:'49%' , display:'flex' , flexDirection:'column'}}>
+          <label htmlFor='addressline3'>Unit no {errorUnitNumber && <span className='error-msg'> - {errorUnitNumber}</span>} <span className='mandatory'>*</span></label>
+            <input type='text' name='addressline3' id='addressline3'
+              value={newaddress.UnitNo}
+              onChange={(e) => {
+                e.preventDefault()
+                setnewaddress({ ...newaddress, UnitNo: e.target.value })
+                setErrorFloorNumber('');
+              }}
+            />
+          </div>
+          </div>
 
           <div className='formcont'>
-            <label htmlFor='addressline3'>Address Line 3</label>
-            <input type='text' name='addressline3' id='addressline3'
+            <label htmlFor='addressline4'>Address Line 3</label>
+            <input type='text' name='addressline4' id='addressline4'
               value={newaddress.AddressLine3}
               onChange={(e) => {
                 e.preventDefault()

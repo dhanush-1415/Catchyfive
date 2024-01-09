@@ -132,7 +132,7 @@ const YourOrders = ({ userid, EmailId }) => {
             })
             setshippingcost(shipping)
             setsubtotal(total)
-            settax(tax)
+            settax(0)
           }
           else {
             toast.error('Error in getting order details')

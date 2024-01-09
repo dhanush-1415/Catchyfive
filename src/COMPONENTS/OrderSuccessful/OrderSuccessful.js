@@ -41,7 +41,7 @@ const OrderSuccessful = ({ orderid, message, redirectto , orderdata , orderitems
 
   const converttofloat = (value) => {
     // console.log(parseFloat(value) + 0.001)
-    value = value.toFixed(2)
+    value = value?.toFixed(2)
     // console.log(value , parseFloat(value) + 0.001)
     // check if value has decimal
     if (!value.includes('.00')) {
@@ -134,12 +134,12 @@ const OrderSuccessful = ({ orderid, message, redirectto , orderdata , orderitems
 
           <div>
             <p>Tax</p>
-            <p>$ {orderdata.Tax}</p>
+            <p>S$ {tax?.toFixed(2)}</p>
           </div>
 
           <div>
             <p>Qty Total</p>
-            <p>$ {orderdata.Total}</p>
+            <p>S$ {orderdata.Total?.toFixed(2)}</p>
           </div>
 
         </div>
@@ -171,7 +171,7 @@ const OrderSuccessful = ({ orderid, message, redirectto , orderdata , orderitems
                         <p>{item.ProductName}</p>
                       </td>
                       <td>
-                        <p>S$ {item.Price ? item.Price.toFixed(2) : 0.00}</p>
+                        <p>S$ {item.Price ? item.Price?.toFixed(2) : 0.00}</p>
                       </td>
                       <td>
                         <p>{item.Qty}</p>
@@ -183,7 +183,7 @@ const OrderSuccessful = ({ orderid, message, redirectto , orderdata , orderitems
                             item.Price
                           )
                             *
-                            item.Qty).toFixed(2)
+                            item.Qty)?.toFixed(2)
                         }</p>
                       </td>
                     </tr>
@@ -201,23 +201,23 @@ const OrderSuccessful = ({ orderid, message, redirectto , orderdata , orderitems
 
           <div className='right'>
             <div>
-              <p>Qty total</p>
-              <p>S$ {converttofloat(subtotal).toFixed(2)}</p>
+              <p style={{textAlign:'left'}}>Qty total</p>
+              <p style={{textAlign:'right'}}>S$ {converttofloat(subtotal)?.toFixed(2)}</p>
             </div>
 
             <div>
-              <p>Shipping charges</p>
-              <p>S$ {converttofloat(shipping).toFixed(2)}</p>
+              <p style={{textAlign:'left'}}>Shipping charges</p>
+              <p style={{textAlign:'right'}}>S$ {converttofloat(shipping)?.toFixed(2)}</p>
             </div>
 
             <div>
-              <p>Tax</p>
-              <p>S$ {tax.toFixed(2)}</p>
+              <p style={{textAlign:'left'}}>Tax</p>
+              <p style={{textAlign:'right'}}>S$ {tax?.toFixed(2)}</p>
             </div>
 
             <div>
-              <p>Pay amount</p>
-              <p>S$ {converttofloat(subtotal + shipping + tax).toFixed(2)}</p>
+              <p style={{textAlign:'left'}}>Pay amount</p>
+              <p style={{textAlign:'right'}}>S$ {converttofloat(subtotal + shipping + tax)?.toFixed(2)}</p>
             </div>
           </div>
         </div>

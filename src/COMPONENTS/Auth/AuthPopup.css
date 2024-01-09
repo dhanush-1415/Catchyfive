@@ -7,6 +7,11 @@
     z-index: 1000;
 }
 
+.addun{
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+}
 .auth-popup__content {
     position: absolute;
     top: 50%;
@@ -83,7 +88,7 @@
     margin-bottom: 5px;
 }
 
-.auth-popup__content form .formcont input {
+.auth-popup__content form .formcont input:not(#combo-box-demo) {
     width: 100%;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -91,9 +96,10 @@
     outline: none;
 }
 
-.auth-popup__content form .formcont input:focus {
+.auth-popup__content form .formcont input:not(#combo-box-demo):focus {
     border: 1px solid var(--col1);
 }
+
 
 .auth-popup__content form .formcont label {
     font-size: 13px;
@@ -304,7 +310,6 @@
 .auth-popup__content .formcont input .email-input {
     flex: 1; 
     padding: 10px; 
-    border: 1px solid #ccc; 
     border-radius: 5px; 
 }
 .auth-popup__content .formcont .send-otp-button {

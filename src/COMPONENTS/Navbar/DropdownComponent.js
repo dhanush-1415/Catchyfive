@@ -3,11 +3,23 @@ import { Link } from 'react-router-dom'
 import './DropdownComponent.css';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import Dropdown from 'react-multilevel-dropdown';
+import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
+import { styled } from '@mui/material/styles';
 
+
+const LightTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: theme.palette.common.white,
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    fontSize: 11,
+  },
+}));
 
 const DropdownComponent = ({ data }) => {
-  // console.log(data)
   const [show, setShow] = React.useState(false)
 
 const [isHovered , setIsHovered] = React.useState(true)
@@ -63,45 +75,63 @@ const [isHovered , setIsHovered] = React.useState(true)
       </div>
 
       {show && data.items && data.items.length > 0 && (
-        <Dropdown
-        title='Dropdown title'
-      >
-        <Dropdown.Item
-          // onClick={() => doSomething()}
-        >
-          Item 1
-        </Dropdown.Item>
-        <Dropdown.Item>
-          Item 2
-          <Dropdown.Submenu>
-            <Dropdown.Item>
-              Subitem 1
-            </Dropdown.Item>
-          </Dropdown.Submenu>
-        </Dropdown.Item>
-      </Dropdown>
-        // <div className='s2' onClick={() => setShow(!show)}>
-        //   {data.items.map((item, index) => (
-        //     <div key={index} className='category'>
-        //       <Link to={`/Home/${item.category.Categoryshorturl}/all/list`} className='stylenone'>
-        //         <h3><b>{item.category.Name}</b></h3>
-        //       </Link>
-        //       {item.category.SubCategoryDetail && item.category.SubCategoryDetail.length > 0 && (
-        //         <div className='subcategory-list'>
-        //           {item.category.SubCategoryDetail.map((subcategory, subIndex) => (
-        //             <Link
-        //               key={subIndex}
-        //               to={`/Home/${item.category.Categoryshorturl}/${subcategory.Subcatgeoryshorturl}/list`}
-        //               className='stylenone padt'
-        //             >
-        //               <h4 style={{ fontSize: '12px' }}>{subcategory.Name}</h4>
-        //             </Link>
-        //           ))}
-        //         </div>
-        //       )}
-        //     </div>
-        //   ))}
-        // </div>
+        <div className='s2' onClick={() => setShow(!show)}>
+          {data.items.map((item, index) => (
+           <LightTooltip  placement="right-start" title={
+            item.category.SubCategoryDetail && item.category.SubCategoryDetail.length > 0 && (
+                <div className='subcategory-list'>
+                  {item.category.SubCategoryDetail.map((subcategory, subIndex) => (
+                  <><LightTooltip placement="right-start" title={
+                    item.category.SubCategoryDetail && item.category.SubCategoryDetail.length > 0 && (
+                        <div className='subcategory-list'>
+                          {subcategory.SubCategoriesLevel2Detail && subcategory.SubCategoriesLevel2Detail.length &&
+                          subcategory.SubCategoriesLevel2Detail.map((level2, subl2Index) => (
+                            <Link
+                              key={subl2Index}
+                              to={`/Home/${item.category.Categoryshorturl}/${subcategory.Subcatgeoryshorturl}/${level2.SubCatgeoryL2shorturl}`}
+                              className='stylenone padt'
+                            >
+                              <h4 style={{ fontSize: '12px' }}>{level2.Name}</h4>
+                            </Link>
+                          ))}
+                        </div>
+                    )
+                  } >
+                    <Link
+                      key={subIndex}
+                      to={`/Home/${item.category.Categoryshorturl}/${subcategory.Subcatgeoryshorturl}/list`}
+                      className='stylenone padt'
+                    >
+                      <h4 style={{ fontSize: '12px' }}>{subcategory.Name}</h4>
+                    </Link>
+                  </LightTooltip>
+                  </>
+                  ))}
+                </div>
+             
+            )
+          }>          
+            <div key={index} className='category'>
+                <Link to={`/Home/${item.category.Categoryshorturl}/all/list`} className='stylenone'>
+                  <h3><b>{item.category.Name}</b></h3>
+                </Link>
+              {/* {item.category.SubCategoryDetail && item.category.SubCategoryDetail.length > 0 && (
+                <div className='subcategory-list'>
+                  {item.category.SubCategoryDetail.map((subcategory, subIndex) => (
+                    <Link
+                      key={subIndex}
+                      to={`/Home/${item.category.Categoryshorturl}/${subcategory.Subcatgeoryshorturl}/list`}
+                      className='stylenone padt'
+                    >
+                      <h4 style={{ fontSize: '12px' }}>{subcategory.Name}</h4>
+                    </Link>
+                  ))}
+                </div>
+              )} */}
+            </div>
+            </LightTooltip >
+          ))}
+        </div>
       )}
     </div>
   );

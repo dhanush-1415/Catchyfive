@@ -13,9 +13,11 @@ nav svg {
     color: rgba(0, 0, 0, 0.403);
 }
 
-/* nav svg:hover {
-    color: var(--col1);
-} */
+.imgslider{
+    max-height: 430px;
+    overflow: auto;
+  }
+  
 
 nav .s1 {
     width: 100%;

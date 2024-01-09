@@ -49,74 +49,125 @@ const UserAddress = () => {
 //     setIsAddNewAddressOpen(false);
 //   };
     const [savedaddresses, setsavedaddresses] = React.useState([])
+
+    // const getaddress = (userdata) => {
+    //     // console.log(userdata)
+    //     let mainaddress = {
+    //         AddressLine1: userdata?.AddressLine1,
+    //         FloorNo : userdata?.FloorNo,
+    //         UnitNo : userdata?.UnitNo,
+    //         AddressLine3: userdata?.AddressLine3,
+    //         EmailId: userdata.EmailId,
+    //         default: true
+    //     }
+    //     let otheraddress = [];
+    //     fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerDeliveryAddress/GetAll?OrganizationId=3&CustomerId=' + userdata.B2CCustomerId)
+    //         .then(res => res.json())
+    //         .then(data => {
+                
+    //             if (data.Data != null) {
+    //                 otheraddress = data.Data
+    //                 if (mainaddress.AddressLine1 == '' && mainaddress.FloorNo == '' && mainaddress.UnitNo == '' && mainaddress.AddressLine3 == '') {
+    //                     let alladdress = [
+    //                         ...otheraddress
+    //                     ]
+    //                     setsavedaddresses(alladdress)
+    //                     // console.log(alladdress)
+
+    //                 }
+
+    //                 else {
+    //                     let alladdress = [
+    //                         ...otheraddress,
+    //                         mainaddress
+    //                     ]
+    //                     setsavedaddresses(alladdress)
+    //                     // console.log(alladdress)
+    //                 }
+
+    //             }
+    //             else {
+    //                 let alladdress = [
+    //                     mainaddress
+    //                 ]
+    //                 if (mainaddress.AddressLine1 == '' && mainaddress.FloorNo == '' && mainaddress.UnitNo == '' && mainaddress.AddressLine3 == '') {
+    //                     setsavedaddresses([])
+    //                     console.log('no address')
+    //                 }
+    //                 else {
+    //                     setsavedaddresses(alladdress)
+    //                     console.log(alladdress)
+
+    //                 }
+
+    //             }
+    //         })
+    //     // let alladdress = []
+    //     // if (userdata.Address) {
+    //     //     alladdress = [
+    //     //         ...userdata.Address,
+    //     //         mainaddress
+    //     //     ]
+    //     //     setsavedaddresses(alladdress)
+    //     // }
+    //     // else {
+    //     //     alladdress = [
+    //     //         mainaddress
+    //     //     ]
+    //     //     setsavedaddresses(alladdress)
+    //     // }
+
+    // }
     const getaddress = (userdata) => {
-        // console.log(userdata)
         let mainaddress = {
             AddressLine1: userdata?.AddressLine1,
-            AddressLine2: userdata?.AddressLine2,
+            FloorNo: userdata?.FloorNo,
+            UnitNo: userdata?.UnitNo,
             AddressLine3: userdata?.AddressLine3,
             EmailId: userdata.EmailId,
             default: true
-        }
+        };
+    
         let otheraddress = [];
+    
         fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerDeliveryAddress/GetAll?OrganizationId=3&CustomerId=' + userdata.B2CCustomerId)
             .then(res => res.json())
             .then(data => {
-                
                 if (data.Data != null) {
-                    otheraddress = data.Data
-                    if (mainaddress.AddressLine1 == '' && mainaddress.AddressLine2 == '' && mainaddress.AddressLine3 == '') {
-                        let alladdress = [
-                            ...otheraddress
-                        ]
-                        setsavedaddresses(alladdress)
-                        // console.log(alladdress)
-
+                    otheraddress = data.Data;
+    
+                    // Check if mainaddress is already present in otheraddress
+                    const mainAddressExists = otheraddress.some(address =>
+                        address.AddressLine1 === mainaddress.AddressLine1 &&
+                        address.FloorNo === mainaddress.FloorNo &&
+                        address.UnitNo === mainaddress.UnitNo &&
+                        address.AddressLine3 === mainaddress.AddressLine3
+                    );
+    
+                    if (!mainAddressExists) {
+                        // Combine otheraddress with mainaddress
+                        let alladdress = [...otheraddress, mainaddress];
+                        setsavedaddresses(alladdress);
+                    } else {
+                        // Mainaddress is already present, set otheraddress
+                        setsavedaddresses(otheraddress);
                     }
-
-                    else {
-                        let alladdress = [
-                            ...otheraddress,
-                            mainaddress
-                        ]
-                        setsavedaddresses(alladdress)
-                        // console.log(alladdress)
+                } else {
+                    let alladdress = [mainaddress];
+                    if (mainaddress.AddressLine1 === '' && mainaddress.FloorNo === '' && mainaddress.UnitNo === '' && mainaddress.AddressLine3 === '') {
+                        setsavedaddresses([]);
+                        console.log('no address');
+                    } else {
+                        setsavedaddresses(alladdress);
+                        console.log(alladdress);
                     }
-
-                }
-                else {
-                    let alladdress = [
-                        mainaddress
-                    ]
-                    if (mainaddress.AddressLine1 == '' && mainaddress.AddressLine2 == '' && mainaddress.AddressLine3 == '') {
-                        setsavedaddresses([])
-                        console.log('no address')
-                    }
-                    else {
-                        setsavedaddresses(alladdress)
-                        console.log(alladdress)
-
-                    }
-
                 }
             })
-        // let alladdress = []
-        // if (userdata.Address) {
-        //     alladdress = [
-        //         ...userdata.Address,
-        //         mainaddress
-        //     ]
-        //     setsavedaddresses(alladdress)
-        // }
-        // else {
-        //     alladdress = [
-        //         mainaddress
-        //     ]
-        //     setsavedaddresses(alladdress)
-        // }
-
-    }
-
+            .catch(error => {
+                console.error('Error fetching addresses:', error);
+            });
+    };
+    
     React.useEffect(() => {
         checklogin()
     }, [])
@@ -171,7 +222,8 @@ const UserAddress = () => {
                         return (
                             <div className={
                                 selectedaddress.AddressLine1 == item.AddressLine1 &&
-                                    selectedaddress.AddressLine2 == item.AddressLine2 &&
+                                    selectedaddress.FloorNo == item.FloorNo &&
+                                    selectedaddress.UnitNo == item.UnitNo &&
                                     selectedaddress.AddressLine3 == item.AddressLine3 &&
                                     selectedaddress.EmailId == item.EmailId ? 'addresscontainer active' : 'addresscontainer'
                             } key={index}
@@ -182,10 +234,13 @@ const UserAddress = () => {
                                 }
                                 <p  onClick={() => openUpdateAddress(item)}>
                                     {
-                                        item.AddressLine1 && <span>{item.AddressLine1}  </span>
+                                        item.AddressLine1 && <span>{item.AddressLine1}</span>
                                     }
                                     {
-                                        item.AddressLine2 && <span>, {item.AddressLine2}  </span>
+                                        item.FloorNo && <span>, {item.FloorNo}</span>
+                                    }
+                                    {
+                                        item.UnitNo && <span>, {item.UnitNo}</span>
                                     }
                                     {
                                         item.AddressLine3 && <span>, {item.AddressLine3}</span>

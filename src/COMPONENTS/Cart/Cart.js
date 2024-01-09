@@ -11,6 +11,7 @@ const Cart = () => {
     const [cartdata, setcartdata] = React.useState([])
     const [subtotal, setsubtotal] = React.useState(0)
     const [freeDelivery, setfreeDelivery] = useState(80)
+    const [quantitySum, setQuantitySum] = React.useState(0);
 
 
 
@@ -44,12 +45,15 @@ const Cart = () => {
           if (userCart) {
             setcartdata(userCart.CartItems);
             let total = 0;
-      
+            let sumOfQuantities = 0;
+
             userCart.CartItems.forEach((item) => {
               total += item.data.SellingCost * item.quantity;
+              sumOfQuantities += item.quantity;
             });
       
             setsubtotal(total);
+            setQuantitySum(sumOfQuantities);
           } else {
             // User has no items in the cart
             setcartdata([]);
@@ -72,7 +76,10 @@ const Cart = () => {
 
 
     return (
-        <div className='cartcontainerout'>
+        <div className='cartcontainerout' >
+            <div className='outcont' onClick={() => {
+                            setCartPopupShow(false)
+                        }}></div>
             <div className='cartcontainerin'>
                 <div className='c11'>
                     <h1>Shopping Cart</h1>
@@ -116,7 +123,11 @@ const Cart = () => {
                 <div className='c3'>
                     <span>Get free delivery for orders above S${freeDelivery}</span>
                     <div className='c31'>
-                        <h1>Qty total:</h1>
+                        <h1>Qty Total:</h1>
+                        <h1>{quantitySum} items</h1>
+                    </div>
+                    <div className='c31'>
+                        <h1>Qty Amount:</h1>
                         <h1>S$ {subtotal.toFixed(2)}</h1>
                     </div>
                     <p>Final price and discounts will be determined at the time of payment processing.</p>

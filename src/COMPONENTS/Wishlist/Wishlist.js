@@ -50,6 +50,9 @@ const Wishlist = () => {
 
     return (
         <div className='cartcontainerout'>
+             <div className='outcont' onClick={() => {
+                            setwishlistpopupshow(false)
+                        }}></div>
             <div className='cartcontainerin'>
                 <div className='c11'>
                     <h1>Your Favourites</h1>
