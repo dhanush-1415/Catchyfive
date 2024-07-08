@@ -113,7 +113,7 @@ const [isHovered , setIsHovered] = React.useState(true)
           }>          
             <div key={index} className='category'>
                 <Link to={`/Home/${item.category.Categoryshorturl}/all/list`} className='stylenone'>
-                  <h3><b>{item.category.Name}</b></h3>
+                  <h3>{item.category.Name}</h3>
                 </Link>
               {/* {item.category.SubCategoryDetail && item.category.SubCategoryDetail.length > 0 && (
                 <div className='subcategory-list'>

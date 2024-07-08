@@ -55,6 +55,36 @@
     color: rgb(89, 89, 89);
 }
 
+.dropdowncomponent .s2 .category:hover h3 {
+    color: green !important;
+    transform: scale(1.20); /* Adjust the scale factor as needed */
+    transition: transform 0.3s ease; /* Add a smooth transition for the zoom effect */
+}
+
+.dropdowncomponent .s2 .category h3 {
+    font-size: 13px;
+    transition: color 0.3s ease; /* Add a smooth transition for the color change */
+}
+.subcategory-list{
+    padding: 10px 0px !important;
+}
+
+.subcategory-list >  .stylenone > h4 {
+    padding:4px 10px !important;
+}
+
+.subcategory-list > .stylenone {
+    font-size: 13px !important;
+    transition: color 0.3s ease; 
+}
+
+.subcategory-list > .stylenone :hover {
+    color: green !important;
+    transform: scale(1.18); /* Adjust the scale factor as needed */
+    transition: transform 0.3s ease;
+    background: #E0E0E0 !important;
+}
+
 
 .dropdowncomponent .s2 .category h3 {
     font-size: 13px;

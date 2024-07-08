@@ -100,7 +100,7 @@ const CategoryTopbar = ({ categories }) => {
     setCategory(event.target.value);
       const selectedCategory = JSON.parse(event.target.value).category;
       if (selectedCategory && selectedCategory.Categoryshorturl) {
-          navigate(`/home/${selectedCategory.Categoryshorturl}/all`);
+          navigate(`/home/${selectedCategory.Categoryshorturl}/all/list`);
       }
     };
 

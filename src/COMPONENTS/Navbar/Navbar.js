@@ -92,12 +92,50 @@ const style = {
 
 
 
-const Navbar = ({ onScrollToSearch }) => {
+const Navbar = ({ onSearch, onSearchClick }) => {
     const [cartdataquantity, setcartdataquantity] = useRecoilState(cartQuantity)
     const [wishlistdataquantity, setwishlistdataquantity] = useRecoilState(wishQuantity)
     const [categories, setCategories] = useState([])
     const [searchValue, setSearchValue] = useState('');
     const [open, setOpen] = useState(false);
+
+
+    const [inputValue, setInputValue] = useState('');
+
+    const handleInputChange = (e) => {
+      setInputValue(e.target.value);
+      onSearch(e.target.value); 
+      
+      if (e.target.value !== '') {
+        localStorage.setItem('showBanner', 'true');
+      } if(e.target.value === '') {
+        localStorage.setItem('showBanner', 'false');
+      }
+    
+    };
+  
+    const handleSearchClick = () => {
+      onSearchClick();
+    };
+
+
+    // const [searchText, setSearchText] = useState('');
+
+
+    useEffect(()=>{
+      localStorage.setItem('showBanner', 'false');
+    }, [])
+
+    // const handlesearch = () => {
+    //   if (searchText !== "") {
+    //     localStorage.setItem('showBanner', 'true');
+    //   } else {
+    //     localStorage.setItem('showBanner', 'false');
+    //   }
+
+    //   localStorage.setItem('searchquery' , searchText);
+    // };
+    
 
 
     const settings = {
@@ -940,7 +978,7 @@ const Navbar = ({ onScrollToSearch }) => {
                 <Grid container width='98%' >
                     <Grid item sm={12} md={8} >
                       <Grid container direction='row'>
-                        <Grid item md={2.5} sx={{display:'flex' , justifyContent:'center' , alignItems:'flex-start'}}>
+                        <Grid  className='deskscroller'  item md={2.5} sx={{display:'flex' , justifyContent:'center' , alignItems:'flex-start'}}>
                           {productData.EcommerceGalleryImages && productData.EcommerceGalleryImages.length ? (
                             <>
                            <Grid container direction='column'>
@@ -970,8 +1008,36 @@ const Navbar = ({ onScrollToSearch }) => {
                         </Grid>
                         <Grid item md={9} m={1}>
                           <Grid container justifyContent="center" alignItems="center" sx={{ border: '1px solid #02b290' , padding:'40px 0' }}>
-                            <img src={imgPath} alt="" width="350px" />
+                            <img src={imgPath} alt="" />
                           </Grid>
+                        </Grid>
+                        <Grid className='mobscroller' item sm={12} xs={12} md={12}  sx={{display:'flex' , justifyContent:'center' , alignItems:'flex-start'}}>
+                          {productData.EcommerceGalleryImages && productData.EcommerceGalleryImages.length ? (
+                            <>
+                           <Grid container direction='column'>
+                           <div className='imgslider2'>
+                          {productData.EcommerceGalleryImages.map((image, index) => (
+                            <Grid
+                            key={index}
+                            item
+                            p={2}
+                            m={1}
+                            sx={{ border: '1px solid #02b290' , display:'flex' , justifyContent:'center' }}
+                            onClick={() => imageclick(image.ImageFilePath)}
+                          >
+                                <img src={image.ImageFilePath || noimage} alt='' width='90px' height='100px' />
+                            </Grid>
+                          ))}
+                          </div>
+                          </Grid>
+                          </>
+                          ):(
+                            <Grid className="imgslider2" container direction='column' justifyContent='center'  alignItems='center'>
+                          <Grid item p={2} m={1} sx={{border:'1px solid #02b290'}}>
+                            <img src={productData.ProductImagePath || noimage} alt='' width='90px' height='100px' />
+                          </Grid>
+                          </Grid>
+                          )}
                         </Grid>
                       </Grid>
                     </Grid>
@@ -1203,52 +1269,40 @@ const Navbar = ({ onScrollToSearch }) => {
                 />
 
 
-    {/* <div className="autocomplete-search-bar searchbar"> */}
-        {/* <Autocomplete
-            id="autocompletesearch"
-            disablePortal
-            className='search'
-            options={products && Array.isArray(products) ? products : []}
-            getOptionLabel={(option) => option.ProductName}
-            sx={{ width: '100%' , background:'white' , border:'none' }}
-            renderInput={(params) => (
-                <TextField
-                {...params}
-                label='search for products and categories'
-                InputProps={{
-                    ...params.InputProps,
-                    endAdornment: (
-                    <InputAdornment position="end">
-                        <SearchIcon />
-                    </InputAdornment>
-                    ),
-                }}
-                />
-            )}
-            onChange={(event, newValue) => handleOpen(newValue?.ProductCode || '')}
-        /> */}
-
-      {/* {showSuggestions && suggestions.length > 0 && (
-        <Grid className='suggestPop'>
-         <ul className="suggestion-list" style={{listStyleType:'none' , padding:'20px'}}>
-          {suggestions.map((suggestion, index) => (
-            <li className='suggest-list' style={{padding:'7px 0' , wordBreak:'break-all'}} key={index} onClick={() => handleSuggestionClick(suggestion)}>
-              {suggestion}
-            </li>
-          ))}
-        </ul>
-        </Grid>
-      )} */}
-    {/* </div> */}
+    <div className="autocomplete-search-bar searchbar">
+                  <TextField id="outlined-basic" label="Search" variant="outlined"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <SearchIcon onClick={handleSearchClick}/>
+                        </InputAdornment>
+                      ),
+                    }}
+                    onChange={handleInputChange}
+                    value={inputValue}
+                    fullWidth
+                    sx={{width:'100%' , background:'white'}}
+                  />
+    </div>
 
     
 
                 <div className='right'>
 
-                  <div>
-                  <SearchIcon  onClick={onScrollToSearch} />
+                  {/* <div className='searchbox'>
+                  <TextField id="outlined-basic" label="Search" variant="outlined"
+                    InputProps={{
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <SearchIcon />
+                        </InputAdornment>
+                      ),
+                    }}
+                    fullWidth
+                    sx={{width:'100%'}}
+                  />
 
-                  </div>
+                  </div> */}
 
                     <div className='freedeliveryout'>
                         {

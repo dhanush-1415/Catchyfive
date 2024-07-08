@@ -1,4 +1,4 @@
-import React from 'react'
+import React , {useState , useEffect} from 'react'
 import Slider from 'react-slick'
 import './BannerSlider.css'
 import img1 from './img1.png'
@@ -52,15 +52,32 @@ const BannerSlider = () => {
     React.useEffect(() => {
         getbannerdata()
     }, [])
+
+
+
+    const [showBanner, setShowBanner] = useState(
+        localStorage.getItem('showBanner') === 'true'
+      );
+    
+      useEffect(() => {
+        const intervalId = setInterval(() => {
+          const storedShowBanner = localStorage.getItem('showBanner') === 'true';
+          setShowBanner(storedShowBanner);
+        }, 1000);
+    
+        return () => clearInterval(intervalId);
+      }, []);
+
+
     return (
-        <div className='bannerslider'>
+        <div className='bannerslider' style={{display : showBanner ? 'none' : 'block'}}>
             <Slider
             autoplay={true}
             autoplaySpeed={3000}
              
             className='bannerslider' {...settings}>
                 {
-                    bannerimages.map((item,index) => {
+                    bannerimages && bannerimages.length && bannerimages.map((item,index) => {
                         return (
                             <div className='imagecont' key={index}>
                                 <img src={item.BannerImageFilePath} alt='noimg' />

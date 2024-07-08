@@ -1,9 +1,11 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useRecoilState } from 'recoil'
 import { updateAddressProvider } from '../../Providers/UpdateAddressProvider'
 import './AddNewAddress.css'
 import logo from '../../ASSETS/logo.png'
 import { toast, ToastContainer } from 'react-toastify'
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 const UpdateAddress = ({ user, address }) => {
   const [shownewaddressform, setShownewaddressform] = useRecoilState(updateAddressProvider)
@@ -11,13 +13,16 @@ const UpdateAddress = ({ user, address }) => {
 
   const [newaddress, setnewaddress] = React.useState({
     AddressLine1: address.AddressLine1,
-    AddressLine2: address.AddressLine2,
+    FloorNo: address.FloorNo,
+    UnitNo: address.UnitNo,
     AddressLine3: address.AddressLine3,
     IsDefault: true,
   })
   const [postalcode, setpostalcode] = React.useState(address.PostalCode)
   const [errorPostalCode, setErrorPostalCode] = React.useState('');
   const [errorFloorNumber, setErrorFloorNumber] = React.useState('');
+  const [errorUnitNumber, setErrorUnitNumber] = React.useState('');
+  const [addbtn , setAddbtn] = useState("Save Address")
 
 
   const addnewaddress = () => {
@@ -32,7 +37,7 @@ const UpdateAddress = ({ user, address }) => {
       "CustomerId": user.B2CCustomerId,
       "Name": user.B2CCustomerName,
       "AddressLine1": newaddress.AddressLine1,
-      "AddressLine2": newaddress.AddressLine2,
+      "AddressLine2": user.AddressLine2,
       "AddressLine3": newaddress.AddressLine3,
       "CountryId": "string",
       "PostalCode": postalcode,
@@ -45,6 +50,8 @@ const UpdateAddress = ({ user, address }) => {
       "CreatedOn": new Date(),
       "ChangedBy": "string",
       "ChangedOn": new Date(),
+      "FloorNo": newaddress.FloorNo,
+      "UnitNo": newaddress.UnitNo,
     }
 
     if (!postalcode) {
@@ -52,15 +59,20 @@ const UpdateAddress = ({ user, address }) => {
       return;
     }
 
-    if (!newaddress.AddressLine2) {
-      setErrorFloorNumber('Floor and Unit number is required.');
+    if (!newaddress.FloorNo) {
+      setErrorFloorNumber('Floor number is required.');
+      return;
+    }
+
+    if (!newaddress.UnitNo) {
+      setErrorUnitNumber('Unit number is required.');
       return;
     }
 
     // Clear any previous errors
     setErrorPostalCode('');
     setErrorFloorNumber('');
-
+    setAddbtn(<CircularProgress sx={{color:'white'}} />);
     fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerDeliveryAddress/Create', {
       method: 'POST',
       headers: {
@@ -72,7 +84,8 @@ const UpdateAddress = ({ user, address }) => {
       .then(data => {
         // console.log(data)
         if (data.Status === true && data.Code === 200) {
-          toast.success('Address Added')
+          toast.success('Address Added');
+          setAddbtn("Save Address")
           updateuserdata()
           // after 2 seconds, set the state to false
           setTimeout(() => {
@@ -81,7 +94,8 @@ const UpdateAddress = ({ user, address }) => {
 
         }
         else {
-          toast.error('Error Adding Address')
+          toast.error('Error Adding Address');
+          setAddbtn("Save Address")
         }
       })
 
@@ -227,16 +241,30 @@ const UpdateAddress = ({ user, address }) => {
               }}
             />
           </div>
-          <div className='formcont'>
-            <label htmlFor='addressline2'>Floor and Unit no {errorFloorNumber && <span className='error-msg'> - {errorFloorNumber}</span>} <span className='mandatory'>*</span></label>
-            <input type='text' name='addressline2' id='addressline2'
-              value={newaddress.AddressLine2}
+
+          <div className='formcont addun'>
+          <div style={{width:'48%' , display:'flex' , flexDirection:'column'}}>
+            <label htmlFor='floor'>Floor no {errorFloorNumber && <span className='error-msg'> - {errorFloorNumber}</span>} <span className='mandatory'>*</span></label>
+            <input type='text' name='floor' id='floor'
+              value={newaddress.FloorNo}
               onChange={(e) => {
                 e.preventDefault()
-                setnewaddress({ ...newaddress, AddressLine2: e.target.value })
+                setnewaddress({ ...newaddress, FloorNo: e.target.value })
                 setErrorFloorNumber('');
               }}
             />
+          </div>
+          <div style={{width:'49%' , display:'flex' , flexDirection:'column'}}>
+          <label htmlFor='unit'>Unit no {errorUnitNumber && <span className='error-msg'> - {errorUnitNumber}</span>} <span className='mandatory'>*</span></label>
+            <input type='text' name='unit' id='unit'
+              value={newaddress.UnitNo}
+              onChange={(e) => {
+                e.preventDefault()
+                setnewaddress({ ...newaddress, UnitNo: e.target.value })
+                setErrorUnitNumber('');
+              }}
+            />
+          </div>
           </div>
 
           <div className='formcont'>
@@ -262,7 +290,7 @@ const UpdateAddress = ({ user, address }) => {
               e.preventDefault()
               addnewaddress()
             }}
-          >Save Address</button>
+          >{addbtn}</button>
         </form>
         <br />
         <br />

@@ -103,7 +103,7 @@ const CategorySidebar = ({ categories }) => {
                                 </Link>
                               </h2>
                               {subcategory.SubCategoriesLevel2Detail && subcategory.SubCategoriesLevel2Detail.length > 0 && (
-                                <div id={`subcollapse${subcategory.Code}`} class="accordion-collapse collapse" aria-labelledby={`subheading${subcategory.Code}`} data-bs-parent="#subaccordionExample">
+                                <div key={subcategory.Code} id={`subcollapse${subcategory.Code}`} class="accordion-collapse collapse" aria-labelledby={`subheading${subcategory.Code}`} data-bs-parent="#subaccordionExample">
                                   <div class="accordion-body">
                                     <ul style={{ listStyleType: 'none', margin: '0' }}>
                                     {subcategory.SubCategoriesLevel2Detail.map((level2, l3Index) => (

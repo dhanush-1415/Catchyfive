@@ -31,43 +31,45 @@ const Home1 = ({ data }) => {
   const [categories, setCategories] = React.useState([]);
   const [sortby, setSortby] = useState("lowtohigh");
   const [pagenumber, setpagenumber] = useState(1);
+  const [pagenumber2, setpagenumber2] = useState(1);
   const [isgetProguct, setisgetProguct] = useState(false);
   const { categoryid, categoryname } = data || {};
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [sortproductsby , setsortproductsby] = React.useState('Latest');
-  // const [searchInput, setSearchInput] = React.useState(''); // Initialize to an empty string
+  const [search , setSearch ] = useState('');
+  const [prevSearch , setprevSearch] = useState('');
 
 
-//   const filteredProducts = products && products.length && products.filter((product) =>
-//   product.ProductName.toLowerCase().includes(searchInput.toLowerCase())
-// );
 
-  const getProducts = (number) => {
+
+
+  const getProducts = (number, searchtext) => {
     setLoadingProducts(true);
-
+  
     const pageSize = 50;
     const encodedCategory = encodeURIComponent(Categoryshorturl);
     const encodedSubcategory = encodeURIComponent(Subcatgeoryshorturl);
     const encodedLevel3Subcategory = encodeURIComponent(level3Subcategory);
-    
+  
     let url;
-
-
+  
     if (Categoryshorturl === undefined || encodedCategory === "all") {
-      url = `${process.env.REACT_APP_BACKEND_URL}/Product/GetAllWithImageV2?OrganizationId=3&pageNo=${number}&pageSize=${pageSize}`;
-    }else{
-      if(encodedSubcategory === "all"){
-        url = `${process.env.REACT_APP_BACKEND_URL}/Product/GetAllWithImageV2?OrganizationId=3&CategoryShortURL=${encodedCategory}&pageNo=${number}&pageSize=${pageSize}`;
-      }else{
-        if(encodedLevel3Subcategory === "list"){
-          url = `${process.env.REACT_APP_BACKEND_URL}/Product/GetAllWithImageV2?OrganizationId=3&CategoryShortURL=${encodedCategory}&SubCategoryShortURL=${encodedSubcategory}&pageNo=${number}&pageSize=${pageSize}`;
-        }else{
-          url = `${process.env.REACT_APP_BACKEND_URL}/Product/GetAllWithImageV2?OrganizationId=3&CategoryShortURL=${encodedCategory}&SubCategoryShortURL=${encodedSubcategory}&SubCategoryL2ShortURL=${encodedLevel3Subcategory}&pageNo=${number}&pageSize=${pageSize}`;
+      url = `${process.env.REACT_APP_BACKEND_URL}/Product/GetAllWithImage?OrganizationId=3&pageNo=${number}&pageSize=${pageSize}${searchtext !== undefined ? `&ProductName=${searchtext}` : ''}`;
+    } else {
+      if (encodedSubcategory === "all") {
+        url = `${process.env.REACT_APP_BACKEND_URL}/Product/GetAllWithImage?OrganizationId=3&CategoryShortURL=${encodedCategory}&pageNo=${number}&pageSize=${pageSize}`;
+      } else {
+        if (encodedLevel3Subcategory === "list") {
+          url = `${process.env.REACT_APP_BACKEND_URL}/Product/GetAllWithImage?OrganizationId=3&CategoryShortURL=${encodedCategory}&SubCategoryShortURL=${encodedSubcategory}&pageNo=${number}&pageSize=${pageSize}`;
+        } else {
+          url = `${process.env.REACT_APP_BACKEND_URL}/Product/GetAllWithImage?OrganizationId=3&CategoryShortURL=${encodedCategory}&SubCategoryShortURL=${encodedSubcategory}&SubCategoryL2ShortURL=${encodedLevel3Subcategory}&pageNo=${number}&pageSize=${pageSize}`;
         }
       }
     }
 
-    
+
+    console.log(url , "QQQQQQQQQQQQQ")
+  
     return fetch(url, {
       method: "GET",
       headers: {
@@ -82,59 +84,74 @@ const Home1 = ({ data }) => {
       })
       .then((data) => {
         setLoadingProducts(false);
-
+  
         let filteredProducts = [];
-
+  
         if (data.Result && data.Result.length > 0) {
-          if (
-            (categoryid && categoryid !== "all") ||
-            (subcategory && subcategory !== "all")
-          ) {
-            filteredProducts = data.Result.filter(
-              (ele) =>
-                ele.Category === categoryid &&
-                (ele.SubCategory === subcategory || subcategory === "all")
-            );
-            filteredProducts = filteredProducts.filter((obj, index, self) => {
-              return index === self.findIndex((o) => o.Code === obj.Code);
-            });
-          } else {
+          if (searchtext !== undefined) {
+            // Include all products when searchtext is present
             filteredProducts = data.Result;
+          } else {
+            if (
+              (categoryid && categoryid !== "all") ||
+              (subcategory && subcategory !== "all")
+            ) {
+              filteredProducts = data.Result.filter(
+                (ele) =>
+                  ele.Category === categoryid &&
+                  (ele.SubCategory === subcategory || subcategory === "all")
+              );
+              filteredProducts = filteredProducts.filter((obj, index, self) => {
+                return index === self.findIndex((o) => o.Code === obj.Code);
+              });
+            } else {
+              filteredProducts = data.Result;
+            }
           }
-        } 
-
-        console.log("filterproducts", filteredProducts);
-        if (number === 1) {
-          // If it's the first page, set the new products
+        }
+  
+        console.log(number , "PPPPPPPPPPPPPPPPPP")
+       if (number === 1) {
           setProducts(filteredProducts);
         } else {
-          // If it's not the first page, append the new products
           setProducts((prevProducts) => [...prevProducts, ...filteredProducts]);
         }
-
-
+  
         if (data.PageSize === pageSize) {
           setpagenumber(number + 1);
-          setisgetProguct(true);
         }
-
+  
         return data;
       })
-
       .catch((error) => {
         console.error("Error fetching products:", error);
-        setLoadingProducts(false); // Ensure loading state is updated even on error
-        return Promise.reject(error); // Reject the promise to propagate the error
+        setLoadingProducts(false);
+        return Promise.reject(error);
       });
   };
+  
 
-  console.log(
-    categoryid,
-    categoryname,
-    subcategory,
-    Categoryshorturl,
-    Subcatgeoryshorturl
-  );
+
+  // useEffect(() => {
+  //   const intervalId = setInterval(() => {
+  //     const searchtext = localStorage.getItem('searchquery');
+  //     if (searchtext) {
+  //       setSearch(searchtext);
+  //       if (prevSearch === searchtext) {
+  //         console.log("same value");
+  //       } else {
+  //         getProducts(pagenumber , searchtext);
+  //         setprevSearch(searchtext);
+  //         console.log("fun called");
+  //         clearInterval(intervalId); 
+  //       }
+  //     }
+  //   }, 1000);
+  
+  //   return () => clearInterval(intervalId);
+  // }, [search]); // Include prevSearch and pagenumber in the dependency array
+  
+
   const getCategories = async () => {
     try {
       const response = await fetch(
@@ -156,7 +173,6 @@ const Home1 = ({ data }) => {
           category: category,
           subcategories: category.SubCategoryDetail,
         };
-        console.log("getcategories", category, category.SubCategoryDetail);
         // Name=category.Name;
         // console.log(category.Name,"Namefromcategory");
         alldata.push(obj);
@@ -167,7 +183,6 @@ const Home1 = ({ data }) => {
       console.log("Error:", error);
     }
   };
-  console.log("datafromcategories", categories);
 
   const checkifinwhishlist = (code) => {};
 
@@ -192,7 +207,6 @@ const Home1 = ({ data }) => {
       getCategories();
       setpagenumber(1);
       // if (pagenumber === 1) {
-      //   getProducts(1);
       // } else {
       //   setpagenumber(1);
       // }
@@ -217,7 +231,6 @@ const Home1 = ({ data }) => {
     } else if (scrolled <= size) {
       setVisible(false);
     }
-    // await getProducts(pagenumber);
     console.log(
       "scrollevent",
       scrolled,
@@ -236,9 +249,9 @@ const Home1 = ({ data }) => {
     if (pagenumber === 1) {
       getProducts(pagenumber);
     }
-    // else {
-    //   window.addEventListener("scroll", toggleVisible);
-    // }
+    else {
+      window.addEventListener("scroll", toggleVisible);
+    }
   }, [
     pagenumber,
     categoryid,
@@ -246,13 +259,13 @@ const Home1 = ({ data }) => {
     subcategory,
     Categoryshorturl,
     Subcatgeoryshorturl,
+    search
   ]);
 let count=0;
   const listInnerRef = useRef();
   const scrollEvent = async () => {
     if (listInnerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = listInnerRef.current;
-      console.log("Scroll Event", scrollTop + clientHeight, scrollHeight);
 
       // Check if the user has scrolled to the bottom of the container
       if (scrollTop + clientHeight >= scrollHeight - 10) {
@@ -280,7 +293,6 @@ let count=0;
 
   const categoryNames = categories.map((category) => category.category.Name);
 
-  console.log("Category Names:", categoryNames);
   const handleCategoryClick = (categoryName) => {
     setSelectedCategory(categoryName);
   };
@@ -294,12 +306,57 @@ let count=0;
     }
   };
 
+
+
+  const [searchValue, setSearchValue] = useState('');
+
+  const handleSearch = () => {
+    console.log('API Call with search value:', searchValue);
+    getProducts(pagenumber2 , searchValue)
+  };
+
+
+
+  const listInnerRef2 = React.createRef();
+
+  const scrollEvent2 = (e) => {
+    const target = e.target;
+    const scrollPercentage = (target.scrollTop + target.clientHeight) / target.scrollHeight;
+
+    // Check if the user has reached the bottom of the container
+    if (scrollPercentage > 0.9 && !loadingProducts && products.length >= 50 ) {
+      if(searchValue !== ''){
+        setLoadingProducts(true)
+        getProducts(pagenumber , searchValue)
+      }else{
+        setLoadingProducts(true)
+        getProducts(pagenumber)
+      }
+    }
+  };
+
+  useEffect(() => {
+    const containerRef = listInnerRef2.current;
+
+    if (containerRef) {
+      containerRef.addEventListener('scroll', scrollEvent2);
+    }
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      if (containerRef) {
+        containerRef.removeEventListener('scroll', scrollEvent2);
+      }
+    };
+  }, [scrollEvent2]);
+
+
+
   return (
     <div>
       <SlidingTopText />
 
-      <Navbar  onScrollToSearch={handleScrollToSearch} />
-
+      <Navbar  onSearch={setSearchValue} onSearchClick={handleSearch} />
       <BannerSlider />
       <HomeCategories />
       <div className="product_sidebar">
@@ -310,14 +367,32 @@ let count=0;
         />
         <div className="allproducts">
           <CategoryTopbar categories={categories} />
+          <div className="mobsearch">
+            <TextField
+                label="Search"
+                id="SearchInput"
+                fullWidth
+                size="small"
+                sx={{maxWidth:'40vh'}}
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <SearchIcon onClick={handleSearch} />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+        </div>
           <div className="header">
-          <div>
+          {/* <div>
               <span>
               <TextField
                 label="Search"
                 id="SearchInput"
                 fullWidth
-                sx={{ minWidth: '350px' }}
+                className="searchbar"
                 // value={searchInput}
                 // onChange={(e) => setSearchInput(e.target.value)}
                 InputProps={{
@@ -329,7 +404,7 @@ let count=0;
                 }}
               />
               </span>
-            </div>
+            </div> */}
             <div className="sortby">
             <span>Sort by : </span>
               <select
@@ -352,8 +427,8 @@ let count=0;
               overflowY: "scroll",
             }}
               className="product-scroll-box"
-              onScroll={(e) => scrollEvent(e)}
-              ref={listInnerRef} spacing={2}
+              onScroll={(e) => scrollEvent2(e)}
+              ref={listInnerRef2} spacing={2}
             >
 
               {products && products.length > 0 ? (

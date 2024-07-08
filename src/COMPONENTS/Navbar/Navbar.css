@@ -180,6 +180,7 @@ nav .s2{
     align-items: center;
     padding: 5px 20px;
     background-color: white;
+    position: unset;
 }
 
 nav .s21{
@@ -279,6 +280,12 @@ nav .s22 p{
    background-color: rgb(235, 235, 235);
 }
 @media (max-width: 800px) {
+    nav .s22{
+       display:none
+    }
+    .searchbox{
+        display: none;
+    }
     .searchbar , .resp{
         display: none !important;
     }

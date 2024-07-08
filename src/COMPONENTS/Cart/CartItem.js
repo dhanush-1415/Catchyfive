@@ -608,8 +608,8 @@ const CartItem = ({ itemdata, getcartdata }) => {
                 <>
                 <Grid container width='98%' >
                     <Grid item sm={12} md={8} >
-                      <Grid container direction='row'>
-                        <Grid item md={2.5} sx={{display:'flex' , justifyContent:'center' , alignItems:'flex-start'}}>
+                      <Grid container direction='row' justifyContent='center'>
+                        <Grid className='deskscroller' item md={2.5} sx={{display:'flex' , justifyContent:'center' , alignItems:'flex-start'}}>
                           {productData.EcommerceGalleryImages && productData.EcommerceGalleryImages.length ? (
                             <>
                        <Grid container direction='column'>
@@ -638,9 +638,37 @@ const CartItem = ({ itemdata, getcartdata }) => {
                           )}
                         </Grid>
                         <Grid item md={9} m={1}>
-                          <Grid container justifyContent="center" alignItems="center" sx={{ border: '1px solid #02b290' , padding:'40px 0' }}>
-                            <img src={imgPath} alt="" width="350px" />
+                          <Grid className='topimg' container justifyContent="center" alignItems="center" sx={{ border: '1px solid #02b290' , padding:'40px 0' }}>
+                            <img className='prodimg' src={imgPath} alt=""  />
                           </Grid>
+                        </Grid>
+                        <Grid item className='mobscroller' sm={12} xs={12} md={12}  sx={{display:'flex' , justifyContent:'center' , alignItems:'flex-start'}}>
+                          {productData.EcommerceGalleryImages && productData.EcommerceGalleryImages.length ? (
+                            <>
+                       <Grid container direction='column'>
+                       <div className='imgslider2'>
+                          {productData.EcommerceGalleryImages.map((image, index) => (
+                            <Grid
+                            key={index}
+                            item
+                            p={2}
+                            m={1}
+                            sx={{ border: '1px solid #02b290' , display:'flex' , justifyContent:'center' }}
+                            onClick={() => imageclick(image.ImageFilePath)}
+                          >
+                                <img src={image.ImageFilePath || noimage} alt='' width='90px' height='100px' />
+                            </Grid>
+                          ))}
+                          </div>
+                          </Grid>
+                          </>
+                          ):(
+                            <Grid className="imgslider2" container direction='column' justifyContent='center'  alignItems='center'>
+                          <Grid item p={2} m={1} sx={{border:'1px solid #02b290'}}>
+                            <img src={productData.ProductImagePath || noimage} alt='' width='90px' height='100px' />
+                          </Grid>
+                          </Grid>
+                          )}
                         </Grid>
                       </Grid>
                     </Grid>

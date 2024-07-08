@@ -3,7 +3,6 @@ import './SlidingTopText.css'
 
 const SlidingTopText = () => {
     const text = "Free Delivery above $80"
-    console.log('TOP TEXT ',text)
     const [animate, setAnimate] = useState(false);
 
     useEffect(() => {

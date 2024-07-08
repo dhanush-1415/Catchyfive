@@ -17,10 +17,19 @@
     background-color: #b0b0b0; /* Color of the scrollbar thumb */
     border-radius: 4px; /* Rounded corners for the thumb */
   }
+  .mobsearch{
+    display: none !important;
+  }
  
 
   @media (max-width: 500px) {
     .product-scroll-box::-webkit-scrollbar {
       display: none;
+    }
+  }
+  @media (max-width: 700px) {
+    .mobsearch{
+      display: flex !important;
+      justify-content: center !important;
     }
   }

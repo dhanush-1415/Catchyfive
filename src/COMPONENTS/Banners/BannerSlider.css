@@ -15,10 +15,10 @@
 }
 
 .bannerslider .imagecont img {
-   
     width: 100%;
-    height: 500px;
+    /* height: 500px; */
     min-height: max-content;
+    max-height: 400px !important;
     object-fit: cover;
 }
 

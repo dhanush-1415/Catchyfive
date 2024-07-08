@@ -385,7 +385,6 @@ const AuthPopup = () => {
                     toast.error("Email already exists")
                 }
                 else {
-                    console.log(tempdata , "PPPPPPPPPPPPPPPPPPPPPPPPP")
                     fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerRegister/Create',
                         {
                             method: 'POST',
@@ -542,7 +541,7 @@ const AuthPopup = () => {
   
         const data = await response.json();
   
-        console.log('OTP sent successfully:', data);
+        toast.success('OTP sent successfully');
         setSendBtnName("Resend");
         setverify(data.Data);
         setForgotOtpVerify(true);
@@ -1185,7 +1184,7 @@ const AuthPopup = () => {
 
         if (data.results && data.results.length > 0) {
           let addressLine3 = data.results[0].BUILDING !== 'NIL' ? `${data.results[0].BUILDING}, SINGAPORE ${postalcode}` : `SINGAPORE ${postalcode}`;
-      setsignupdata(prevAddress => ({
+          setsignupdata(prevAddress => ({
         ...prevAddress,
         AddressLine1: `${data.results[0].BLK_NO} ${data.results[0].ROAD_NAME}`,
         AddressLine3: addressLine3

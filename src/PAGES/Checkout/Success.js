@@ -20,25 +20,23 @@ const Sucess = () => {
   //const [reloadKey, setReloadKey] = React.useState(0); // Add a reload key
   const paymentId = localStorage.getItem('paymentId');
 
+
   const emptyCart = () => {
     const userData = JSON.parse(localStorage.getItem('token'));
     const userId = userData && userData.length ? userData[0].B2CCustomerId : null;
-
-    let cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
-
+  
+    const cartArray = JSON.parse(localStorage.getItem('cartArray')) || [];
+  
     if (userId) {
-        const userCartIndex = cartArray.findIndex((userCart) => userCart.UserId === userId);
-
-        if (userCartIndex !== -1) {
-            // If the user has a cart, remove the entire cart entry
-            cartArray.splice(userCartIndex, 1);
-            localStorage.setItem('cartArray', JSON.stringify(cartArray));
-        }
-    } else {
-        // Handle the case where the user is not logged in
-        console.log('User not logged in');
+      // Filter out the user's cart from cartArray
+      const updatedCartArray = cartArray.filter((userCart) => userCart.UserId !== userId);
+    
+      // Update localStorage with the modified cartArray
+      localStorage.setItem('cartArray', JSON.stringify(updatedCartArray));
+    
     }
-};
+  
+  };
 
   const placesuccessorder = () => {
     fetch(process.env.REACT_APP_BACKEND_URL + '/B2CCustomerOrder/Create', {
@@ -97,12 +95,6 @@ const Sucess = () => {
       <div className="success-container">
         <h1 className="success-heading">Thank You for Your Order!</h1>
         <p className="success-message">Your order has been successfully placed. </p>
-        {/* <div className="order-summary">
-        </div>
-        <div className="shipping-info">
-        </div>
-        <div className="payment-info">
-        </div> */}
         <p className="order-number">Your Order Number: {ordersuccessorderid}</p>
       
 
@@ -111,66 +103,6 @@ const Sucess = () => {
 
 
         <div className='confirmationcont'>
-        {/* <div className='c1'>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
-          </svg>
-          <h2>{message}</h2>
-        </div> */}
-
-
-        {/* <div className='c2'>
-          <h2>Order Summary</h2>
-          <div>
-            <p>Order Number</p>
-            <p>{orderdata.OrderNo}</p>
-          </div>
-
-          <div>
-            <p>Order Date</p>
-            <p>{
-              new Date().toLocaleDateString()
-            }</p>
-          </div>
-
-          <div>
-            <p>Name</p>
-            <p>{orderdata.CustomerName
-            }</p>
-          </div>
-
-          <div>
-            <p>Email</p>
-            <p>
-              {
-                user.EmailId
-              }
-            </p>
-          </div>
-
-          <div>
-            <p>Payment Method</p>
-            <p>{orderdata.PaymentType}</p>
-          </div>
-
-          <div>
-            <p>Shipping Address</p>
-            <p>{orderdata.CustomerShipToAddress
-            }</p>
-          </div>
-
-          <div>
-            <p>Tax</p>
-            <p>$ {orderdata.Tax}</p>
-          </div>
-
-          <div>
-            <p>Sub Total</p>
-            <p>$ {orderdata.Total}</p>
-          </div>
-
-        </div> */}
-
 
 <div className='c3'>
           <table>

@@ -21,11 +21,13 @@ const TnCPrivacy = () => {
                             <p>
                                 <span>Introduction</span>&nbsp;&nbsp;&nbsp;<br></br>
 
-                                Welcome to Catchyfive.com (“Company”, “we”, “our”, “us”)!<br></br>
-                                These Terms of Service (“Terms”, “Terms of Service”) govern your use of our website located at www.catchyfive.com & Mobile applications (together or individually “Service”) operated by Catchyfive Pte Ltd.<br></br>
-                                Our Privacy Policy also governs your use of our Service and explains how we collect, safeguard, and disclose information that results from your use of our web pages.<br></br>
-                                Your agreement with us includes these Terms and our Privacy Policy (“Agreements”). You acknowledge that you have read and understood Agreements, and agree to be bound of them.<br></br>
-                                If you do not agree with (or cannot comply with) Agreements, then you may not use the Service, but please let us know by emailing at sales@catchyfive.com so we can try to find a solution. These Terms apply to all visitors, users, and others who wish to access or use Service.<br></br>
+                                Welcome to CATCHYFIVE PTE. LTD.<br></br>
+                                <br />
+                                Please note that our team regulates your access and usage of our website located at www.catchyfive.com & Mobile Applications subject to the following notices, Terms and Conditions. <br></br>
+                                <br />
+                                These following Terms and Conditions and our Privacy Policy are part of the agreement that you have with us. Hence, we entrust your acknowledgement that you have read and comprehend the Terms and Conditions and our Privacy Policy and affirm to abide by them<br></br>
+                                <br />
+                                With any case of disagreement with our Terms and Conditions and our Privacy Policy, then you might not want to use the Service in CatchyFive, however essentially you could email us at help@catchyfive.com so that we could suffice you with a solution speedily<br></br>
                             </p>
 
 
@@ -34,8 +36,19 @@ const TnCPrivacy = () => {
                         <li>
                             <p>
                                 <span>Communications</span>&nbsp;&nbsp;&nbsp;<br></br>
-
-                                By using our Service, you agree to subscribe to newsletters, marketing or promotional materials and other information we may send. However, you may opt-out of receiving any, or all, of these communications from us by following the unsubscribe link or by email to sales@catchyfive.com.<br></br>
+                                <br />
+                                In order to purchase any product or service through CatchyFive, you may have to provide some sensitive details related to your purchase or transaction including but not restricted to, your credit or debit card number, the expiration date of your card, card verification value (CVV), your billing address, and your shipping information<br></br>
+                                <br />You represent and warrant that:<br></br>
+                                <br />You have the legal right to use any card(s) or other payment methods in connection with any Purchase;<br></br>
+                                <br />The information and credentials that you provide us is genuine, accurate and complete.
+You must accept the Terms & Conditions and the Refund and Cancellation policy before proceeding with the payment<br></br>
+<br />We may employ the use of third-party services for the purpose of facilitating payment and the completion of purchases. By submitting your information, you grant us the right to provide the information to these third parties subject to our Privacy Policy.<br></br>
+<br />We reserve the right to refuse or cancel your order at any time for reasons including but not limited to product or service availability, errors in the description or price of the product or service, error in your order, or other reasons.
+<br></br>
+<br />                           
+We reserve the right to refuse or cancel your order if fraud or an unauthorized or illegal transaction is suspected.
+<br></br>
+<br />
                             </p>
 
 
@@ -49,105 +62,96 @@ const TnCPrivacy = () => {
                         </div> */}
                         <li>
                             <p>
-                                <span>Purchases & Payments.</span>&nbsp;&nbsp;&nbsp;<br></br>
+                                <span>Delivery</span>&nbsp;&nbsp;&nbsp;<br></br>
 
-                                If you wish to purchase any product or service made available through Service (“Purchase”), you may be asked to provide certain information relevant to your Purchase including but not limited to, your credit or debit card number, the expiration date of your card, your billing address, and your shipping information.<br></br><br></br>
                             </p>
-
-                            <p>You represent and warrant that:</p>
+                            <p>Warehouse Processing Time</p>
+                            <br/>
+                            <ol type='i'>
+                                <li>
+                                    <p>All the customers’ orders require at least 1 business day for warehouse processing.</p>
+                                </li>
+                            </ol>
+                            <br />
+                            <p>Standard Shipping Time & Fee</p>
+                            <br/>
                             <ol type='i'>
                                 <li>
                                     <p>
-                                        you have the legal right to use any card(s) or other payment method(s) in connection with any Purchase; and that
+                                        Free shipping on orders over $79
                                     </p>
                                 </li>
 
                                 <li>
                                     <p>
-                                        the information you supply to us is true, correct and complete.
+                                    Flat $7 shipping charge on orders less than $79
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>Delivery timings range between 10:30 AM - 09:30 PM every day</p>
+                                </li>
+                                <li>
+                                    <p>
+                                    Delivery will be done in 1 - 3 days
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                    We offer doorstep delivery at your stated delivery address 
+
                                     </p>
                                 </li>
                             </ol>
-                            <p>You must accept the following statement provided with a checkbox, before proceeding the payment: <br></br>
-                                I agree to the Terms and Conditions and the Refund and Cancellation policy.<br></br>
-                                We may employ the use of third-party services for the purpose of facilitating payment and the completion of Purchases. By submitting your information, you grant us the right to provide the information to these third parties subject to our Privacy Policy.<br></br>
-                                We reserve the right to refuse or cancel your order at any time for reasons including but not limited to: product or service availability, errors in the description or price of the product or service, error in your order or other reasons.<br></br>
-                                We reserve the right to refuse or cancel your order if fraud or an unauthorized or illegal transaction is suspected.
+                            <br />
+                            <p>If there are any amendments in the delivery address / personal contact details between the submission of order and delivery date, customers are required to make any changes at least 24 hours prior to delivery. A surcharge of $6 (incl. of GST) will be applied to the order, if there should be any delay of delivery date and time be required for. A surcharge of $25 (incl. of GST) will be applied to the order, if the requests for a delay in delivery date and time are for bulk orders. 
+
+
                             </p>
+                            <br />
                         </li>
 
                         <li>
                             <p>
-                                <span>Delivery of orders</span><br></br>
-                                The options of Guaranteed Slot-based Delivery are subject to the following Terms & Conditions:<br></br>
-                                <ol type='i'>
-                                    <li>
-                                        <p>
-                                            To get your order within the guaranteed delivery time, you need to select the respective slot-based delivery option during checkout.
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <p>
-                                            In the Slot-based Delivery option, you need to select the delivery date.
-                                        </p>
-                                    </li>
-                                    <li>
-                                        <p>
-                                            We are constantly working to expand our coverage. Please check the availability of guaranteed delivery options for your pin code on the detail page or at check out.
-                                        </p>
-                                    </li>
-                                </ol>
+                                <span>Cancellation of Orders</span><br></br>
+                                <br/>
+                               <p>
+                               In the event the Customer cancels their order (except for bulk orders/purchases) at least 24 hours before delivery, there will be no charge.
+Subsequently, an additional cancellation charge of $20 (inc.of GST) for home delivery and $30 (inc.of GST) for bulk order delivery is imposed on each order canceled.
+                               </p>
+                               <br/>
                             </p>
                         </li>
 
+                       
+
                         <li>
                             <p>
-                                <span>Cancellation of orders</span> <br></br>
-                                If you need to cancel your order, you can do so within one hour of placing the order. To cancel your order, simply log in to your CatchyFive.sg account and navigate to your order history. From there, you can select the order that you would like to cancel and click on the "Cancel Order" button.
-                                <br></br>  <br></br>
-                                Once you have cancelled your order, you will receive a confirmation email from us. If you do not receive a confirmation email, please reach out to our customer service team as soon as possible.
-                                <br></br>  <br></br>
-                                Please note that if you do not cancel your order within one hour of placing it, the order will be placed and processed as normal. At this point, we will be unable to cancel the order or make any changes to it.
-                                <br></br>  <br></br>
-                                We strive to provide our customers with the best possible service and support, and we are always happy to help with any questions or concerns you may have. Please do not hesitate to reach out to our customer service team if you need assistance with cancelling an order or any other aspect of your shopping experience with us.
+                                <span>Return, Refunds & Exchange</span> <br/>
+                                In the event that you need to return a product to Catchy Five, whether due to the cancellation of the contract, disagreement with changes in our Terms and Conditions or Policies, a claimed defect, or overall dissatisfaction with the product, we will carefully examine the returned item. Upon satisfaction with the product's condition post-examination, we will proceed to either replace the item (if returned due to a defect) or issue a refund. Refunds will typically be processed using the original payment method, and we aim to complete the refund process as promptly as possible.
+                                <br/>
+                                For products returned within the seven-day cooling-off period or due to a defect, we will provide a full refund after deducting any applicable delivery costs.
+                                <br/>
+                                Any claim regarding a shortfall in the quantity of products delivered, in comparison to the quantity ordered, must be communicated to Catchy Five help center within 2 days from the date of delivery. Failure to notify us within this timeframe will absolve us of any liability related to the shortfall, and you will be obligated to pay the price as if the products were delivered in accordance with the contract.
+                                <br/>
+                                The expenses associated with the return transportation of the product are to be covered by you.
+                                <br/>
 
                             </p>
                         </li>
 
                         <li>
                             <p>
-                                <span>Return, Refunds & Exchange</span> <br></br>
-                                If for any reason you are not satisfied with a product that you have purchased from us, you can return it within one day of the purchase date. To initiate a return, please ensure that you have the original purchase bill and a photo image of the product. This is necessary to verify the purchase and the condition of the product. Please contact our customer service team to request a return and provide the required information.
-                                <br></br>  <br></br>
-                                Once your return request is approved, you can either bring the product to our physical store or ship it back to us. Please ensure that the product is in its original packaging and in the same condition that it was received. If the product is damaged or not in its original condition, we may be unable to process the return.
-                                <br></br>  <br></br>
-                                Please note that we are unable to accept returns on certain items, such as perishable goods and personal care items, for hygiene and safety reasons.
-                                <br></br>  <br></br>
-                                We will process your return as quickly as possible and issue a refund to your original payment method. Please note that it may take several days for the refund to appear in your account, depending on your payment provider.
-
-
+                                <span> Acceptance of Terms</span> <br/>
+                                By using our Service, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions and our Privacy Policy. If you do not agree with any part of these terms, you may choose not to access or use our Service.
+                                <br></br>  <br/>
                             </p>
                         </li>
 
                         <li>
                             <p>
-                                <span>Contests, Sweepstakes, and Promotions</span> <br></br>
-                                Any contests, sweepstakes, or other promotions (collectively, “Promotions”) made available through Service may be governed by rules that are separate from these Terms of Service. If you participate in any Promotions, please review the applicable rules as well as our Privacy Policy. If the rules for a Promotion conflict with these Terms of Service, Promotion rules will apply.
-                                <br></br>  <br></br>
-                            </p>
-                        </li>
-
-                        <li>
-                            <p>
-                                <span>Content</span> <br></br>
-                                Our Service allows you to post, link, store, share, and otherwise make available certain information, text, graphics, videos, or other material (“Content”). You are responsible for Content that you post on or through Service, including its legality, reliability, and appropriateness.<br></br>  <br></br>
-                                By posting Content on or through Service, you represent and warrant that:<br></br>
-                                i. Content is yours (you own it) and/or you have the right to use it and the right to grant us the rights and license as provided in these Terms.
-                                ii. The posting of your Content on or through Service does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person or entity. We reserve the right to terminate the account of anyone found to be infringing on a copyright.<br></br>
-                                You retain all your rights to any Content you submit, post or display on or through Service and you are responsible for protecting those rights. We take no responsibility and assume no liability for Content you or any third-party posts on or through Service. However, by posting Content using Service you grant us the right and license to use, modify, publicly perform, publicly display, reproduce, and distribute such Content on and through Service. You agree that this license includes the right for us to make your Content available to other users of Service, who may also use your Content subject to these Terms.<br></br>
-                                Catchyfive.sg has the right but not the obligation to monitor and edit all Content provided by users.<br></br>
-                                In addition, Content found on or through this Service is the property of CatchyFive.sg or used with permission. You may not distribute, modify, transmit, reuse, download, repost, copy, or use said Content, whether in whole or in part, for commercial purposes or for personal gain, without express advance written permission from us.
-                                <br></br>
+                                <span>Modifications</span> <br/>
+                                CatchyFive PTE. LTD. reserves the right to modify, suspend, or discontinue the Service at any time without prior notice. We may also update these Terms and Conditions periodically. Your continued use of the Service after any changes will constitute your acceptance of such changes.
+<br/>
                             </p>
                         </li>
                         {/* <div className='images3'>
@@ -162,37 +166,32 @@ const TnCPrivacy = () => {
                 </div> */}
                         <li>
                             <p>
-                                <span>Prohibited Uses</span> <br></br>
-                                Disseminating any unlawful, harassing, libellous, abusive, threatening, harmful, vulgar, obscene, or otherwise objectionable material<br></br><br></br>
-                                Transmitting material that encourages conduct that constitutes a criminal offence or results in civil liability or otherwise breaches any relevant laws, regulations, or code of practice.<br></br><br></br>
-                                Gaining unauthorized access to other computer systems.<br></br><br></br>
-                                Interfering with any other person's use or enjoyment of the Site.<br></br><br></br>
-                                Breaching any applicable laws<br></br><br></br>
-                                Interfering or disrupting networks or web sites connected to the Site.<br></br><br></br>
-                                Making, transmitting, or storing electronic copies of materials protected by copyright without the permission of the owner.<br></br><br></br>
-                                Service is intended only for access and use by adults at least eighteen (18) years old. By accessing or using Service, you warrant and represent that you are at least eighteen (18) years of age and with the full authority, right, and capacity to enter into this agreement and abide by all the terms and conditions of Terms. If you are not at least eighteen (18) years old, you are prohibited from both the access and usage of Service.
-                                <br></br>
+                                <span> User Accounts</span> <br></br>
+                                To access certain features of the Service, you may be required to create a user account. You are responsible for maintaining the confidentiality of your account information, including your username and password. You agree to accept responsibility for all activities that occur under your account.
+                <br/>
                             </p>
                         </li>
 
                         <li>
                             <p>
-                                <span>Acknowledgment</span> <br></br>
-                                By using service or other services provided by us, you acknowledge that you have read these terms of service and agree to be bound by them.
-                                <br></br>
+                                <span> User Conduct</span> <br></br>
+                                You agree to use the Service in accordance with all applicable laws and regulations. You shall not engage in any conduct that may disrupt the functionality of the Service, interfere with other users, or compromise the security of the Service.
+                                <br/>
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                <span> Intellectual Property</span> <br></br>
+                                All content, trademarks, logos, and other intellectual property on the Service are the property of CatchyFive PTE. LTD. and are protected by intellectual property laws. You may not use, reproduce, distribute, or create derivative works based on such content without explicit permission.
+                                <br/>
                             </p>
                         </li>
 
                         <li>
                             <p>
                                 <span>Privacy policy</span> <br></br>
-                                We use data collection devices such as “cookies” on the Site to help analyse our web page flow, measure promotional effectiveness, and promote trust and safety. The term “cookies” means small files placed on your hard drive that assist us in providing our services. <br></br><br></br>
-                                Cookies can also help us provide information that is targeted to your interests. You are always free to decline our cookies if your browser permits, although in that case, you may not be able to use certain features on the Site.
-                                Additionally, you may encounter “cookies” or other similar devices on certain pages of the Site that are placed by third parties. Catchyfive.com does not control the use of cookies by third parties.<br></br><br></br>
-                                Given the nature of internet transactions, Catchyfive.com does not take any responsibility for the transmission of Information including the Information you provide to Catchyfive.com. Any transmission of your Information on the internet is done at your risk. Catchyfive.com does not take any responsibility for you or any third party circumventing the privacy settings or security measures contained on the Site.<br></br><br></br>
-                                While Catchyfive.com will use all reasonable efforts to ensure that your information is safe and secure, it offers no representation, warranties, or other assurances that the security measures are adequate, safe, fool proof, or impenetrable. The shopper has the right to request a copy of, amend, and delete personal information collected as well as include the contact that they should reach out to if they would like to do so.<br></br><br></br>
-                                You acknowledge that as a registered user you are responsible for maintaining the security of your Account such as your Account login credentials and passwords and that you should not provide these credentials to any third party. If it comes to your knowledge that or if you have reason to believe that your Account credentials have been stolen or been made known to others, you must contact us immediately at sales@catchyfive.com. You acknowledge that you are responsible for all acts done, using your account login credentials. Catchyfive.sg is not responsible if someone else accesses your Account on account of your failure to maintain the security of your Account credentials. You have the right to access, correct, and delete personal information collected. To exercise your rights, you can contact us at sales@catchyfive.com.<br></br><br></br>
-
+                                Your use of the Service is also governed by our Privacy Policy, which can be found at [link to your privacy policy]. Please review the Privacy Policy to understand how we collect, use, and disclose your information.
+                <br/>
                             </p>
                         </li>
                     </ol>
@@ -229,8 +228,8 @@ const TnCPrivacy = () => {
                 </div>
                  */}
                  <div className='c1'>
-                    <h2>For  enquiries please contact us at: <span>sales@catchyfive.com</span></h2>
-                    <p>For all other inquiries, visit our  <span
+                    <h2>For any inquiries or concerns regarding these Terms and Conditions, please contact us at help@catchyfive.com. We are committed to resolving any issues promptly and efficiently.</h2>
+                    <p>By using the Service, you agree to abide by these Terms and Conditions. Thank you for choosing CatchyFive PTE. LTD.  <span
                      onClick={() => {
                         window.scrollTo(0, 0)
                      }}
