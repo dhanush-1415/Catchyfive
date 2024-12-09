@@ -33,7 +33,8 @@ const AuthPopup = () => {
     const [userData , setUserdata] = useState([]);
     const [date , setDate] = useState("");
     const [createDisable , setCreateDisable] = useState(true);
-
+    const [isOtpVerified, setIsOtpVerified] = useState(false); // Track OTP verification status
+    
     const handleChange = (nextChecked) => {
         setChecked(nextChecked);
     }
@@ -60,14 +61,6 @@ const AuthPopup = () => {
       setShowLoginPassword(!showLoginPassword);
     };
     
-
-    const setTimeDisable = () => {
-      setSendDisabled(true);
-  
-      setTimeout(() => {
-        setSendDisabled(false);
-      }, 30000); 
-    };
   
     const handleLogin = async () => {
 
@@ -79,6 +72,7 @@ const AuthPopup = () => {
         } else if (!isEmailValid(logindata.Username)) {
           emailError = 'Please enter a valid email';
         }
+      console.log("email",logindata.EmailId);
       
         if (!logindata.Password) {
           passwordError = 'Please enter your password';
@@ -106,7 +100,9 @@ const AuthPopup = () => {
             "OrgId": 3,
             "UserName": logindata.Username,
             "Password": logindata.Password,
-            "BranchCode": "HO"
+            "BranchCode": "HO",
+            "TranType": "string",
+            "Module": "string"
           }),
         })
           .then((response) => response.json())
@@ -186,7 +182,7 @@ const AuthPopup = () => {
         AddressLine2: "",
         AddressLine3: "",
         MobileNo: "",
-        CountryId: "IND",
+        CountryId: "0003",
         PostalCode: "",
         IsActive: true,
         IsApproved: true,
@@ -194,6 +190,8 @@ const AuthPopup = () => {
         CreatedOn: new Date(),
         ChangedBy: "user",
         ChangedOn: new Date(),
+        FloorNo:"",
+        UnitNo:"",
         Orders: [],
         Address: [
             {}
@@ -385,10 +383,11 @@ const AuthPopup = () => {
         setIsOtpSent(true);
         setShowVerifySection(true);
         setOtpSentMessage(true);
-        setTimeDisable()
         setTimeout(() => {
           setOtpSentMessage(false);
         }, 1000);
+        setSendDisabled(true);
+        toast.success('OTP has been sent to your email');
     
   
       } catch (error) {
@@ -481,6 +480,7 @@ const AuthPopup = () => {
       setCreateDisable(false);
       // Show success message for 5 seconds
       setShowSuccessMessage(true);
+      setIsOtpVerified(true);
       setTimeout(() => {
         setShowSuccessMessage(false);
       }, 1000);
@@ -933,13 +933,14 @@ const AuthPopup = () => {
         }}
       />
       {/* {signupErrors.email && <div className='error-msg'>{signupErrors.email}</div>} */}
-      <button className='btn send-otp-button' disabled={sendDisable} onClick={handleSendOTP}>
+      <button className='btn send-otp-button' disabled={sendDisable || isOtpVerified} onClick={handleSendOTP}>
         Send OTP
       </button>
      
       </div>
-      {otpSentMessage && (
-        <p style={{ color: 'green' }}>OTP has been sent to your email</p>
+    
+      {isOtpSent && (
+        <ToastContainer position="top-right" autoClose={5000} /> 
       )}
       {isOtpSent && !isVerified && showVerifySection &&  (
         <div className='formcont'>
@@ -1002,8 +1003,7 @@ const AuthPopup = () => {
                   {/* {signupErrors.password && <div className='error-msg'>{signupErrors.password}</div>} */}
                 </div>
                             <div className='formcont'>
-  {/* <label htmlFor='postalcode'>Postal Code <span className="mandatory">*</span></label> */}
-  <label htmlFor='postalcode'>Postal Code{signupErrors.postalCode&& <span className='error-msg'> - {signupErrors.postalCode}</span>} <span className='mandatory'>*</span></label>
+   <label htmlFor='postalcode'>Postal Code{signupErrors.postalCode&& <span className='error-msg'> - {signupErrors.postalCode}</span>} <span className='mandatory'>*</span></label>
   <div className="email-input-container">
     <input
     className='email-input'
@@ -1017,12 +1017,13 @@ const AuthPopup = () => {
         setsignupdata({ ...signupdata, PostalCode: e.target.value });
       }}
     />
-    {/* {signupErrors.postalCode && <div className='error-msg'>{signupErrors.postalCode}</div>} */}
+   
     <button
       className='btn send-otp-button'
       onClick={async (e) => {
         e.preventDefault();
-        let url = `https://developers.onemap.sg/commonapi/search?searchVal=${postalcode}&returnGeom=N&getAddrDetails=Y&pageNum=1`;
+        const url = `https://www.onemap.gov.sg/api/common/elastic/search?searchVal=${postalcode}&returnGeom=Y&getAddrDetails=Y&pageNum=1`;
+
         const response = await fetch(url);
         const data = await response.json();
 
@@ -1042,7 +1043,7 @@ const AuthPopup = () => {
       Fetch
     </button>
   </div>
-</div>
+</div> 
 
           <div className='formcont'>
             <label htmlFor='addressline1'>Address Line 1</label>
@@ -1055,9 +1056,9 @@ const AuthPopup = () => {
             />
           </div>
           <div className='formcont'>
-          <label htmlFor='addressline2'>Floor and Unit no{signupErrors.floor && <span className='error-msg'> - {signupErrors.floor}</span>} <span className='mandatory'>*</span></label>
+          <label htmlFor='addressline2'>Address Line 2{signupErrors.floor && <span className='error-msg'> - {signupErrors.floor}</span>} <span className='mandatory'>*</span></label>
             {/* <label htmlFor='addressline2'>Floor and Unit no <span className="mandatory">*</span></label> */}
-            <input type='text' name='addressline2' id='addressline2' placeholder='Enter your Floor no or unit no'
+            <input type='text' name='addressline2' id='addressline2'
               value={signupdata.AddressLine2}
               onChange={(e) => {
                 e.preventDefault()
@@ -1073,6 +1074,26 @@ const AuthPopup = () => {
               onChange={(e) => {
                 e.preventDefault()
                 setsignupdata({...signupdata, AddressLine3: e.target.value })
+              }}
+            />
+          </div>
+          <div className='formcont'>
+            <label htmlFor='floorno'>Floor No <span className="mandatory">*</span></label>
+            <input type='text' name='floorno' id='floorno'
+              value={signupdata.FloorNo}
+              onChange={(e) => {
+                e.preventDefault()
+                setsignupdata({...signupdata, FloorNo: e.target.value })
+              }}
+            />
+          </div>
+          <div className='formcont'>
+            <label htmlFor='unitno'>Unit No<span className="mandatory">*</span></label>
+            <input type='text' name='unitno' id='unitno'
+              value={signupdata.UnitNo}
+              onChange={(e) => {
+                e.preventDefault()
+                setsignupdata({...signupdata, UnitNo: e.target.value })
               }}
             />
           </div>
